@@ -1,70 +1,36 @@
-import type { Dispatch, SetStateAction } from "react";
+import type { SetState } from "@/types/globals";
+import { toast } from "react-hot-toast";
 
-export type SetState<T> = Dispatch<SetStateAction<T>>;
-
-// file
-export type OriginalImage = {
-  name: string;
-  url: string;
-};
-
-export type UploadedFile = {
-  publicId: string;
-  secureUrl: string;
-  createdAt: string;
-};
-
-// replicate
-export type ImageToPromptBody = {
-  version: string;
-  input: {
-    image: string;
-  };
-};
-
-export type ClipInterrogatorBody = {
-  version: string;
-  input: {
-    image: string;
-    clip_model_name: "ViT-L-14/openai" | "ViT-H-14/laion2b_s32b_b79k";
-    mode: "best" | "fast";
-  };
-};
-
-export type PromptToPokemonBody = {
-  version: string;
-  input: {
-    prompt: string;
-    num_outputs: number;
-    num_inference_steps: number;
-    guidance_scale: number;
-    seed?: string;
-  };
-};
-
-export type ResponseData = {
-  id: string;
-  input: string | null;
-  output: string | null;
-};
-
-export type PredictionResult<TInput> = {
-  completed_at: string;
-  created_at: string;
-  error: string | null;
-  id: string;
-  input: TInput;
-  logs: string;
-  metrics: {
-    predict_time: number;
-  };
-  output: string | null;
-  started_at: string;
-  status: "starting" | "succeeded" | "failed";
-  urls: {
-    cancel: string;
-    get: string;
-  };
-  version: string;
-  webhook_completed: null;
+// download file
+export const downloadFile = (
+  url: string,
+  filename: string,
+  setIsDownloading: SetState<boolean>
+) => {
+  setIsDownloading(true);
+  fetch(url, {
+    headers: new Headers({
+      Origin: location.origin,
+    }),
+    mode: "cors",
+  })
+    .then((response) =>
+      response.blob().then((blob) => {
+        const fileURL = window.URL.createObjectURL(blob);
+        const alink = document.createElement("a");
+        alink.href = fileURL;
+        alink.download = filename;
+        alink.click();
+        alink.remove();
+        setIsDownloading(false);
+      })
+    )
+    .catch((error: unknown) => {
+      error instanceof Error
+        ? toast.error(error.message)
+        : typeof error === "string"
+        ? toast.error(error)
+        : toast.error("Error downloading file");
+      setIsDownloading(false);
+    });
 };

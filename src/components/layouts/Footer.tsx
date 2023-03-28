@@ -1,20 +1,26 @@
 const Footer = () => {
   return (
-    <footer
-      aria-label="footer"
-      className="w-full bg-gradient-to-t from-gray-700 to-gray-800/40 py-5"
-    >
+    <footer aria-label="footer" className="w-full bg-gray-700/60 py-5">
       <div className="container grid max-w-6xl place-items-center text-center">
-        <h1 className="text-sm text-gray-400 sm:text-base">
+        <div className="text-sm text-gray-300 sm:text-base">
           Powered by{" "}
           <a
-            aria-label="navigate to openai"
-            href="https://openai.com/"
+            aria-label="navigate to replicate"
+            href="https://replicate.com/home"
             target="_blank"
             rel="noreferrer"
-            className="font-semibold text-gray-300 transition-colors hover:text-gray-100 active:text-gray-300"
+            className="font-semibold text-gray-200 transition-colors hover:text-white active:text-gray-100"
           >
-            OpenAI
+            Replicate
+          </a>
+          <a
+            aria-label="navigate to cloudinary"
+            href="https://cloudinary.com"
+            target="_blank"
+            rel="noreferrer"
+            className="font-semibold text-gray-200 transition-colors hover:text-white active:text-gray-100"
+          >
+            {", "} Cloudinary
           </a>
           {", and "}
           <a
@@ -22,11 +28,11 @@ const Footer = () => {
             href="https://vercel.com"
             target="_blank"
             rel="noreferrer"
-            className="font-semibold text-gray-300 transition-colors hover:text-gray-100 active:text-gray-300"
+            className="font-semibold text-gray-200 transition-colors hover:text-white active:text-gray-100"
           >
             Vercel
           </a>
-        </h1>
+        </div>
       </div>
     </footer>
   );

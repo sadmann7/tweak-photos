@@ -1,4 +1,7 @@
+import DefaultLayout from "@/components/layouts/DefaultLayout";
+import ToastWrapper from "@/components/ui/ToastWrapper";
 import "@/styles/globals.css";
+import { api } from "@/utils/api";
 import type { NextPage } from "next";
 import { type Session } from "next-auth";
 import { SessionProvider } from "next-auth/react";
@@ -19,17 +22,17 @@ type AppPropsWithLayout = AppProps<{
   Component: NextPageWithLayout;
 };
 
-import { api } from "@/utils/api";
-
-import "@/styles/globals.css";
-
 const MyApp: AppType<{ session: Session | null }> = ({
   Component,
   pageProps: { session, ...pageProps },
 }: AppPropsWithLayout) => {
+  const getLayout =
+    Component.getLayout ?? ((page) => <DefaultLayout>{page}</DefaultLayout>);
+
   return (
     <SessionProvider session={session}>
-      <Component {...pageProps} />
+      {getLayout(<Component {...pageProps} />)}
+      <ToastWrapper />
     </SessionProvider>
   );
 };

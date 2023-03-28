@@ -1,10 +1,17 @@
 /** @type {import('tailwindcss').Config} */
-const config = {
+module.exports = {
   content: ["./src/**/*.{js,ts,jsx,tsx}"],
   theme: {
-    extend: {},
+    container: {
+      center: true,
+      padding: "1rem",
+    },
+    extend: {
+      screens: {
+        xxs: "320px",
+        xs: "448px",
+      },
+    },
   },
-  plugins: [],
+  plugins: [require("@tailwindcss/forms"), require("@headlessui/tailwindcss")],
 };
-
-module.exports = config;
