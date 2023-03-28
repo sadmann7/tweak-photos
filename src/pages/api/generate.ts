@@ -4,7 +4,12 @@ import type {
   ResponseData,
   ResponseResult,
 } from "@/types/globals";
-import { GENDER, HAIR_STYLE, SKIN_TONE, type EMOTION } from "@/types/globals";
+import {
+  GENDER,
+  HAIR_STYLE,
+  SKIN_TONE,
+  type EXPRESSION,
+} from "@/types/globals";
 import type { NextApiRequest, NextApiResponse } from "next";
 
 interface ExtendedNextApiRequest extends NextApiRequest {
@@ -12,7 +17,7 @@ interface ExtendedNextApiRequest extends NextApiRequest {
     image: string;
     skinTone: SKIN_TONE;
     hairStyle: HAIR_STYLE;
-    emotion: EMOTION;
+    expression: EXPRESSION;
     gender: GENDER;
   };
 }
@@ -24,7 +29,7 @@ export default async function handler(
   res: NextApiResponse<ResponseData | string>
 ) {
   try {
-    const { image, skinTone, hairStyle, emotion, gender } = req.body;
+    const { image, skinTone, hairStyle, expression, gender } = req.body;
 
     const prompt = `a ${
       gender === GENDER.DEFAULT
@@ -36,10 +41,14 @@ export default async function handler(
       hairStyle === HAIR_STYLE.DEFAULT
         ? ""
         : `${hairStyle.toLowerCase()} hair, and`
-    } ${`${emotion.toLowerCase()} emotion`}`;
-    console.log(prompt);
+    } ${`${expression.toLowerCase()} expression`}`;
 
     const sanitizedPrompt = prompt.replaceAll(/\s+/g, " ").trim();
+
+    console.log({
+      prompt,
+      sanitizedPrompt,
+    });
 
     // POST request to Replicate to start the image restoration generation process
     const responseBody: ResponseBody = {
@@ -48,18 +57,9 @@ export default async function handler(
       input: {
         input: image,
         neutral: "a face",
-        // Target image description
         target: sanitizedPrompt,
-        // The higher the manipulation strength, the closer the generated image
-        // becomes to the target description. Negative values moves the
-        // generated image further from the target description
-        // Range: -10 to 10
-        manipulation_strength: 7,
-        // The higher the disentanglement threshold, the more specific the
-        // changes are to the target attribute. Lower values mean that broader
-        // changes are made to the input image
-        // Range: 0.08 to 0.3
-        disentanglement_threshold: 0.3,
+        manipulation_strength: 4.1,
+        disentanglement_threshold: 0.15,
       },
     };
 

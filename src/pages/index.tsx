@@ -13,8 +13,11 @@ import type {
 } from "@/types/globals";
 import {
   ACCESSORY,
-  EMOTION,
+  COSMETIC,
+  EXPRESSION,
+  FACIAL_HAIR,
   GENDER,
+  HAIR_COLOR,
   HAIR_STYLE,
   SKIN_TONE,
 } from "@/types/globals";
@@ -34,9 +37,13 @@ const schema = z.object({
   }),
   skinTone: z.nativeEnum(SKIN_TONE).default(SKIN_TONE.DEFAULT),
   hairStyle: z.nativeEnum(HAIR_STYLE).default(HAIR_STYLE.DEFAULT),
-  emotion: z.nativeEnum(EMOTION).default(EMOTION.HAPPY),
+  hairColor: z.nativeEnum(HAIR_COLOR).default(HAIR_COLOR.DEFAULT),
+  facialHair: z.nativeEnum(FACIAL_HAIR).default(FACIAL_HAIR.DEFAULT),
+  facialHairColor: z.nativeEnum(HAIR_COLOR).default(HAIR_COLOR.DEFAULT),
+  expression: z.nativeEnum(EXPRESSION).default(EXPRESSION.HAPPY),
   gender: z.nativeEnum(GENDER).default(GENDER.DEFAULT),
-  accessory: z.nativeEnum(ACCESSORY).default(ACCESSORY.DEFAULT),
+  accessory: z.array(z.nativeEnum(ACCESSORY)).default([]),
+  cosmetic: z.array(z.nativeEnum(COSMETIC)).default([]),
 });
 type TInputs = z.infer<typeof schema>;
 
@@ -59,26 +66,17 @@ const Home: NextPageWithLayout = () => {
   const onSubmit: SubmitHandler<TInputs> = async (data) => {
     console.log(data);
     if (!(data.image instanceof File)) return;
-    await uploadImage(
-      data.image,
-      data.skinTone,
-      data.hairStyle,
-      data.emotion,
-      data.gender
-    );
+    await generateImage(data);
   };
 
-  // upload image to cloudinary
-  const uploadImage = async (
-    image: File,
-    skinTone: SKIN_TONE,
-    hairStyle: HAIR_STYLE,
-    emotion: EMOTION,
-    gender: GENDER
-  ) => {
+  // generate image
+  const generateImage = async (data: TInputs) => {
+    // upload image to cloudinary
+    if (!(data.image instanceof File)) return;
+    await new Promise((resolve) => setTimeout(resolve, 200));
     setIsLoading(true);
     const reader = new FileReader();
-    reader.readAsDataURL(image);
+    reader.readAsDataURL(data.image);
     reader.onload = async () => {
       const base64 = reader.result;
       if (typeof base64 !== "string") return;
@@ -96,67 +94,49 @@ const Home: NextPageWithLayout = () => {
         toast.error("Something went wrong");
         setIsLoading(false);
       } else {
+        if (!(data.image instanceof File)) return;
         const uploadedFile = (await response.json()) as UploadedFile;
         if (!uploadedFile) return;
         setOriginalImage({
-          name: image.name,
+          name: data.image.name,
           url: uploadedFile.secureUrl,
         });
+
+        // generate image from replicate
         setIsLoading(true);
-        await generateImage(
-          uploadedFile.secureUrl,
-          skinTone,
-          hairStyle,
-          emotion,
-          gender
-        );
+        await new Promise((resolve) => setTimeout(resolve, 200));
+        setIsLoading(true);
+        const response2 = await fetch("/api/generate", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            ...data,
+            image: uploadedFile.secureUrl,
+          }),
+        });
+
+        const response3 = (await response2.json()) as ResponseData;
+        if (response2.status !== 200) {
+          response3 instanceof Object
+            ? setError(response3.output)
+            : setError(response3);
+          setIsLoading(false);
+        } else {
+          setGeneratedImage(response3.output);
+          setTimeout(() => {
+            setIsLoading(false);
+          }, 1300);
+        }
       }
     };
-    await new Promise((resolve) => setTimeout(resolve, 200));
-  };
-
-  // generate image from replicate
-  const generateImage = async (
-    image: string,
-    skinTone: SKIN_TONE,
-    hairStyle: HAIR_STYLE,
-    emotion: EMOTION,
-    gender: GENDER
-  ) => {
-    await new Promise((resolve) => setTimeout(resolve, 200));
-    setIsLoading(true);
-    const res = await fetch("/api/generate", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        image,
-        skinTone,
-        hairStyle,
-        emotion,
-        gender,
-      }),
-    });
-
-    const response = (await res.json()) as ResponseData;
-    if (res.status !== 200) {
-      response instanceof Object
-        ? setError(response.output)
-        : setError(response);
-      setIsLoading(false);
-    } else {
-      setGeneratedImage(response.output);
-    }
-
-    setTimeout(() => {
-      setIsLoading(false);
-    }, 1300);
   };
 
   console.log({
     originalImage,
     generatedImage,
+    isLoading,
   });
 
   return (
@@ -366,7 +346,7 @@ const Home: NextPageWithLayout = () => {
               </fieldset>
               <fieldset className="grid w-full gap-4">
                 <label
-                  htmlFor="emotion"
+                  htmlFor="expression"
                   className="flex items-center gap-2.5 text-sm font-medium  sm:text-base"
                 >
                   <span className="grid h-7 w-7 place-items-center rounded-full bg-gray-50 text-base font-bold text-gray-900 sm:text-lg">
@@ -376,12 +356,12 @@ const Home: NextPageWithLayout = () => {
                 </label>
                 <DropdownSelect
                   control={control}
-                  name="emotion"
-                  options={Object.values(EMOTION)}
+                  name="expression"
+                  options={Object.values(EXPRESSION)}
                 />
-                {formState.errors.emotion ? (
+                {formState.errors.expression ? (
                   <p className="-mt-1 text-sm font-medium text-red-500">
-                    {formState.errors.emotion.message}
+                    {formState.errors.expression.message}
                   </p>
                 ) : null}
               </fieldset>
@@ -406,13 +386,63 @@ const Home: NextPageWithLayout = () => {
                   </p>
                 ) : null}
               </fieldset>
+              <div className="flex w-full flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
+                <fieldset className="grid w-full gap-4">
+                  <label
+                    htmlFor="accessory"
+                    className="flex items-center gap-2.5 text-sm font-medium  sm:text-base"
+                  >
+                    <span className="grid h-7 w-7 place-items-center rounded-full bg-gray-50 text-base font-bold text-gray-900 sm:text-lg">
+                      6
+                    </span>
+                    <span className="flex-1 text-gray-50">
+                      Choose accessory
+                    </span>
+                  </label>
+                  <DropdownSelect
+                    control={control}
+                    name="accessory"
+                    options={Object.values(ACCESSORY)}
+                    isMultiple={true}
+                    isRequired={false}
+                  />
+                  {formState.errors.accessory ? (
+                    <p className="-mt-1 text-sm font-medium text-red-500">
+                      {formState.errors.accessory.message}
+                    </p>
+                  ) : null}
+                </fieldset>
+                <fieldset className="grid w-full gap-4">
+                  <label
+                    htmlFor="cosmetic"
+                    className="flex items-center gap-2.5 text-sm font-medium  sm:text-base"
+                  >
+                    <span className="grid h-7 w-7 place-items-center rounded-full bg-gray-50 text-base font-bold text-gray-900 sm:text-lg">
+                      7
+                    </span>
+                    <span className="flex-1 text-gray-50">Choose cosmetic</span>
+                  </label>
+                  <DropdownSelect
+                    control={control}
+                    name="cosmetic"
+                    options={Object.values(COSMETIC)}
+                    isMultiple={true}
+                    isRequired={false}
+                  />
+                  {formState.errors.cosmetic ? (
+                    <p className="-mt-1 text-sm font-medium text-red-500">
+                      {formState.errors.cosmetic.message}
+                    </p>
+                  ) : null}
+                </fieldset>
+              </div>
               <fieldset className="grid w-full gap-4">
                 <label
                   htmlFor="image"
                   className="flex items-center gap-2.5 text-sm font-medium sm:text-base"
                 >
                   <span className="grid h-7 w-7 place-items-center rounded-full bg-gray-50 text-base font-bold text-gray-900 sm:text-lg">
-                    6
+                    8
                   </span>
                   <span className="flex-1 text-gray-50">Upload your image</span>
                 </label>

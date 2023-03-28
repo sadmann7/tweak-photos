@@ -12,26 +12,34 @@ type DropdownSelectProps<
   control: Control<TFieldValues, TContext>;
   name: Path<TFieldValues>;
   options: PathValue<TFieldValues, Path<TFieldValues>>[];
+  isMultiple?: boolean;
+  isRequired?: boolean;
 };
 
 const DropdownSelect = <TFieldValues extends FieldValues>({
   control,
   name,
   options,
+  isMultiple = false,
+  isRequired = true,
 }: DropdownSelectProps<TFieldValues>) => {
-  const [selected, setSelected] = useState(options[0]);
+  const [selected, setSelected] = useState<string | string[]>(
+    isMultiple ? [] : options[0] || ""
+  );
 
   return (
     <Controller
       control={control}
       name={name}
+      rules={{ required: isRequired }}
       render={({ field: { onChange } }) => (
         <Listbox
           value={selected}
           onChange={(val) => {
-            onChange(val);
             setSelected(val);
+            onChange(val);
           }}
+          multiple={isMultiple}
         >
           <div className="relative">
             <Listbox.Button
@@ -40,7 +48,9 @@ const DropdownSelect = <TFieldValues extends FieldValues>({
                 "focus:outline-none focus-visible:ring-2 focus-visible:ring-gray-300 focus-visible:ring-offset-2 focus-visible:ring-offset-gray-800"
               )}
             >
-              <span className="block truncate">{selected}</span>
+              <span className="block truncate">
+                {isMultiple ? `Selected (${selected.length})` : selected}
+              </span>
               <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
                 <ChevronUp
                   className="h-5 w-5 text-gray-900 transition-transform ui-open:rotate-180"

@@ -10,28 +10,6 @@ export enum SKIN_TONE {
   DARK = "Dark",
 }
 
-export enum HAIR_COLOR {
-  DEFAULT = "Default",
-  BLONDE = "Blonde",
-  BROWN = "Brown",
-  BLACK = "Black",
-  RED = "Red",
-  GRAY = "Gray",
-  WHITE = "White",
-  PINK = "Pink",
-  BLUE = "Blue",
-}
-
-export enum EYE_COLOR {
-  DEFAULT = "Default",
-  BLACK = "Black",
-  BLUE = "Blue",
-  BROWN = "Brown",
-  GREEN = "Green",
-  HAZEL = "Hazel",
-  GRAY = "Gray",
-}
-
 export enum HAIR_STYLE {
   DEFAULT = "Default",
   SHORT = "Short",
@@ -44,10 +22,41 @@ export enum HAIR_STYLE {
   PONYTAIL = "Ponytail",
 }
 
+export enum HAIR_COLOR {
+  DEFAULT = "Default",
+  BLONDE = "Blonde",
+  BROWN = "Brown",
+  BLACK = "Black",
+  RED = "Red",
+  GRAY = "Gray",
+  WHITE = "White",
+  PINK = "Pink",
+  BLUE = "Blue",
+  BOWL_CUT = "Bowl Cut",
+}
+
+export enum FACIAL_HAIR {
+  DEFAULT = "Default",
+  BEARD = "Beard",
+  MUSTACHE = "Mustache",
+  SIDE_BURNS = "Side Burns",
+}
+
+export enum EYE_COLOR {
+  DEFAULT = "Default",
+  BLACK = "Black",
+  BLUE = "Blue",
+  BROWN = "Brown",
+  GREEN = "Green",
+  HAZEL = "Hazel",
+  GRAY = "Gray",
+}
+
 export enum GENDER {
   DEFAULT = "Default",
   MALE = "Male",
   FEMALE = "Female",
+  OTHERS = "Others",
 }
 
 export enum AGE {
@@ -58,16 +67,7 @@ export enum AGE {
   SENIOR = "Senior",
 }
 
-export enum ACCESSORY {
-  DEFAULT = "Default",
-  GLASSES = "Glasses",
-  SUNGLASSES = "Sunglasses",
-  HAT = "Hat",
-  HEADPHONES = "Headphones",
-  MASK = "Mask",
-}
-
-export enum EMOTION {
+export enum EXPRESSION {
   HAPPY = "Happy",
   SAD = "Sad",
   ANGRY = "Angry",
@@ -76,6 +76,29 @@ export enum EMOTION {
   FEARFUL = "Fearful",
   CALM = "Calm",
 }
+
+export enum ACCESSORY {
+  GLASSES = "Glasses",
+  SUNGLASSES = "Sunglasses",
+  HAT = "Hat",
+  HEADPHONES = "Headphones",
+  MASK = "Mask",
+}
+
+export enum COSMETIC {
+  LIPSTICK = "Lipstick",
+  BLUSH = "Blush",
+  EYEBROW = "Eyebrow",
+  EYELINER = "Eyeliner",
+  EYESHADOW = "Eyeshadow",
+  MASCARA = "Mascara",
+  NOSE_RING = "Nose Ring",
+  NECKLACE = "Necklace",
+  EARRINGS = "Earrings",
+  TATTOO = "Tattoo",
+}
+
+// random accessory feature can be added to the prompt
 
 // form file field
 export type OriginalImage = {
