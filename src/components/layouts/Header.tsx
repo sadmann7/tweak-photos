@@ -1,10 +1,12 @@
 import { Icons } from "@/components/Icons";
+import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { twMerge } from "tailwind-merge";
 
 const Header = () => {
   const [isScrolled, setIsScrolled] = useState<boolean>(false);
+  const session = useSession();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -32,20 +34,21 @@ const Header = () => {
           className="flex items-center gap-2 text-white transition-colors hover:text-gray-100"
         >
           <Icons.logo className="h-6 w-6" aria-hidden="true" />
-          <span className="text-xl font-medium">TweakPhotos</span>
+          <span className="text-lg font-medium sm:text-xl">TweakPhotos</span>
         </Link>
-        <a
-          aria-label="navigate to github repo"
-          href="https://github.com/sadmann7/npm-picker"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="flex items-center gap-2 rounded-full bg-blue-600 px-2 py-2 text-base transition-colors hover:bg-blue-700 active:scale-95 xxs:px-4"
-        >
-          <Icons.gitHub className="h-5 w-5" aria-hidden="true" />
-          <span className="sr-only text-xs text-gray-100 xxs:not-sr-only sm:text-sm">
-            Star on Github
-          </span>
-        </a>
+        <div className="flex items-center gap-4">
+          <Link
+            aria-label="sign in"
+            href={
+              session.status === "authenticated"
+                ? "/dashboard"
+                : "api/auth/signin"
+            }
+            className="rounded-md bg-blue-600 px-4 py-1.5 text-base transition-colors hover:bg-blue-700 active:scale-95 sm:text-base"
+          >
+            Dashboard
+          </Link>
+        </div>
       </nav>
     </header>
   );

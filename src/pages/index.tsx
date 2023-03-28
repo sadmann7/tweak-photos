@@ -1,4 +1,5 @@
 import CompareSlider from "@/components/CompareSlider";
+import { Icons } from "@/components/Icons";
 import DefaultLayout from "@/components/layouts/DefaultLayout";
 import Button from "@/components/ui/Button";
 import FileInput from "@/components/ui/FileInput";
@@ -11,7 +12,7 @@ import type {
 } from "@/types/globals";
 import { downloadFile } from "@/utils/download";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { AlertTriangle, Download, Loader2, Upload } from "lucide-react";
+import { AlertTriangle, Download, Loader2, Tv2, Upload } from "lucide-react";
 import Head from "next/head";
 import Image from "next/image";
 import { useState } from "react";
@@ -116,14 +117,38 @@ const Home: NextPageWithLayout = () => {
       </Head>
       <main className="w-full pt-40 pb-32 sm:pt-32">
         <div className="container grid max-w-5xl place-items-center gap-12 sm:gap-14">
-          <div className="grid max-w-4xl place-items-center gap-5">
-            <h1 className="w-full text-center text-4xl font-bold leading-tight text-gray-200 sm:text-6xl sm:leading-tight">
+          <div className="grid w-full  max-w-4xl place-items-center gap-5">
+            <h1 className="text-center text-4xl font-bold leading-tight text-gray-200 sm:text-6xl sm:leading-tight">
               Generating <span className="text-blue-500">pokemons</span> from
               your images using AI
             </h1>
-            <p className="w-full text-center text-lg text-gray-400 sm:text-xl">
+            <p className="text-center text-lg text-gray-400 sm:text-xl">
               Upload your image and get a pokemon generated from it
             </p>
+            <div className="flex w-full items-center justify-center gap-3">
+              <a
+                aria-label="navigate to github repo"
+                href="https://github.com/sadmann7/npm-picker"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center justify-center gap-2 rounded-md border border-gray-700 bg-transparent px-4 py-2 text-gray-50 transition-colors hover:bg-gray-800 focus:ring-2 focus:ring-gray-400 focus:ring-offset-2 focus:ring-offset-gray-800 active:scale-95 xxs:w-fit xxs:px-4"
+              >
+                <Icons.gitHub className="h-5 w-5" aria-hidden="true" />
+                <span className="sr-only text-xs font-medium xxs:not-sr-only sm:text-sm">
+                  Star on Github
+                </span>
+              </a>
+              <Button
+                aria-label="watch demo"
+                variant="ghost"
+                className="h-auto w-fit gap-2 border border-gray-700 px-4 py-2 active:scale-95"
+              >
+                <Tv2 className="h-5 w-5" aria-hidden="true" />
+                <span className="sr-only text-xs font-medium xxs:not-sr-only sm:text-sm">
+                  Watch demo
+                </span>
+              </Button>
+            </div>
           </div>
           {isLoading ? (
             <div className="grid w-full place-items-center">
@@ -260,6 +285,7 @@ const Home: NextPageWithLayout = () => {
                   selectedFile={selectedFile}
                   setSelectedFile={setSelectedFile}
                   disabled={isLoading}
+                  // previewType="name"
                 />
                 {formState.errors.image?.message ? (
                   <p className="text-sm font-medium text-red-500">
