@@ -2,6 +2,7 @@ import CompareSlider from "@/components/CompareSlider";
 import { Icons } from "@/components/Icons";
 import DefaultLayout from "@/components/layouts/DefaultLayout";
 import Button from "@/components/ui/Button";
+import DropdownSelect from "@/components/ui/DropdownSelect";
 import FileInput from "@/components/ui/FileInput";
 import Toggle from "@/components/ui/Toggle";
 import type { NextPageWithLayout } from "@/pages/_app";
@@ -9,6 +10,13 @@ import type {
   OriginalImage,
   ResponseData,
   UploadedFile,
+} from "@/types/globals";
+import {
+  ACCESSORY,
+  EMOTION,
+  GENDER,
+  HAIR_STYLE,
+  SKIN_TONE,
 } from "@/types/globals";
 import { downloadFile } from "@/utils/download";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -24,8 +32,13 @@ const schema = z.object({
   image: z.unknown().refine((v) => v instanceof File, {
     message: "Upload an image",
   }),
+  skinTone: z.nativeEnum(SKIN_TONE).default(SKIN_TONE.DEFAULT),
+  hairStyle: z.nativeEnum(HAIR_STYLE).default(HAIR_STYLE.DEFAULT),
+  emotion: z.nativeEnum(EMOTION).default(EMOTION.HAPPY),
+  gender: z.nativeEnum(GENDER).default(GENDER.DEFAULT),
+  accessory: z.nativeEnum(ACCESSORY).default(ACCESSORY.DEFAULT),
 });
-type Inputs = z.infer<typeof schema>;
+type TInputs = z.infer<typeof schema>;
 
 const Home: NextPageWithLayout = () => {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -39,17 +52,30 @@ const Home: NextPageWithLayout = () => {
   const [isDownloading, setIsDownloading] = useState(false);
 
   // react-hook-form
-  const { handleSubmit, formState, setValue, reset } = useForm<Inputs>({
-    resolver: zodResolver(schema),
-  });
-  const onSubmit: SubmitHandler<Inputs> = async (data) => {
+  const { handleSubmit, formState, control, setValue, reset } =
+    useForm<TInputs>({
+      resolver: zodResolver(schema),
+    });
+  const onSubmit: SubmitHandler<TInputs> = async (data) => {
     console.log(data);
     if (!(data.image instanceof File)) return;
-    await uploadImage(data.image);
+    await uploadImage(
+      data.image,
+      data.skinTone,
+      data.hairStyle,
+      data.emotion,
+      data.gender
+    );
   };
 
   // upload image to cloudinary
-  const uploadImage = async (image: File) => {
+  const uploadImage = async (
+    image: File,
+    skinTone: SKIN_TONE,
+    hairStyle: HAIR_STYLE,
+    emotion: EMOTION,
+    gender: GENDER
+  ) => {
     setIsLoading(true);
     const reader = new FileReader();
     reader.readAsDataURL(image);
@@ -77,22 +103,40 @@ const Home: NextPageWithLayout = () => {
           url: uploadedFile.secureUrl,
         });
         setIsLoading(true);
-        await generateImage(uploadedFile.secureUrl);
+        await generateImage(
+          uploadedFile.secureUrl,
+          skinTone,
+          hairStyle,
+          emotion,
+          gender
+        );
       }
     };
     await new Promise((resolve) => setTimeout(resolve, 200));
   };
 
   // generate image from replicate
-  const generateImage = async (imageUrl: string) => {
+  const generateImage = async (
+    image: string,
+    skinTone: SKIN_TONE,
+    hairStyle: HAIR_STYLE,
+    emotion: EMOTION,
+    gender: GENDER
+  ) => {
     await new Promise((resolve) => setTimeout(resolve, 200));
     setIsLoading(true);
-    const res = await fetch("/api/generatePrompt", {
+    const res = await fetch("/api/generate", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ imageUrl }),
+      body: JSON.stringify({
+        image,
+        skinTone,
+        hairStyle,
+        emotion,
+        gender,
+      }),
     });
 
     const response = (await res.json()) as ResponseData;
@@ -110,6 +154,11 @@ const Home: NextPageWithLayout = () => {
     }, 1300);
   };
 
+  console.log({
+    originalImage,
+    generatedImage,
+  });
+
   return (
     <>
       <Head>
@@ -119,11 +168,10 @@ const Home: NextPageWithLayout = () => {
         <div className="container grid max-w-5xl place-items-center gap-12 sm:gap-14">
           <div className="grid w-full  max-w-4xl place-items-center gap-5">
             <h1 className="text-center text-4xl font-bold leading-tight text-gray-200 sm:text-6xl sm:leading-tight">
-              Generating <span className="text-blue-500">pokemons</span> from
-              your images using AI
+              Edit your face photos using AI
             </h1>
             <p className="text-center text-lg text-gray-400 sm:text-xl">
-              Upload your image and get a pokemon generated from it
+              Upload only face photos for better results
             </p>
             <div className="flex w-full items-center justify-center gap-3">
               <a
@@ -274,9 +322,99 @@ const Home: NextPageWithLayout = () => {
               className="grid w-full max-w-lg place-items-center gap-8"
               onSubmit={(...args) => void handleSubmit(onSubmit)(...args)}
             >
-              <fieldset className="grid w-full gap-5">
-                <label htmlFor="image" className="sr-only">
-                  Upload your image
+              <fieldset className="grid w-full gap-4">
+                <label
+                  htmlFor="skinTone"
+                  className="flex items-center gap-2.5 text-sm font-medium  sm:text-base"
+                >
+                  <span className="grid h-7 w-7 place-items-center rounded-full bg-gray-50 text-base font-bold text-gray-900 sm:text-lg">
+                    1
+                  </span>
+                  <span className="flex-1 text-gray-50">Choose skin tone</span>
+                </label>
+                <DropdownSelect
+                  control={control}
+                  name="skinTone"
+                  options={Object.values(SKIN_TONE)}
+                />
+                {formState.errors.skinTone ? (
+                  <p className="-mt-1 text-sm font-medium text-red-500">
+                    {formState.errors.skinTone.message}
+                  </p>
+                ) : null}
+              </fieldset>
+              <fieldset className="grid w-full gap-4">
+                <label
+                  htmlFor="hairStyle"
+                  className="flex items-center gap-2.5 text-sm font-medium  sm:text-base"
+                >
+                  <span className="grid h-7 w-7 place-items-center rounded-full bg-gray-50 text-base font-bold text-gray-900 sm:text-lg">
+                    2
+                  </span>
+                  <span className="flex-1 text-gray-50">Choose hair style</span>
+                </label>
+                <DropdownSelect
+                  control={control}
+                  name="hairStyle"
+                  options={Object.values(HAIR_STYLE)}
+                />
+                {formState.errors.hairStyle ? (
+                  <p className="-mt-1 text-sm font-medium text-red-500">
+                    {formState.errors.hairStyle.message}
+                  </p>
+                ) : null}
+              </fieldset>
+              <fieldset className="grid w-full gap-4">
+                <label
+                  htmlFor="emotion"
+                  className="flex items-center gap-2.5 text-sm font-medium  sm:text-base"
+                >
+                  <span className="grid h-7 w-7 place-items-center rounded-full bg-gray-50 text-base font-bold text-gray-900 sm:text-lg">
+                    4
+                  </span>
+                  <span className="flex-1 text-gray-50">Choose emotion</span>
+                </label>
+                <DropdownSelect
+                  control={control}
+                  name="emotion"
+                  options={Object.values(EMOTION)}
+                />
+                {formState.errors.emotion ? (
+                  <p className="-mt-1 text-sm font-medium text-red-500">
+                    {formState.errors.emotion.message}
+                  </p>
+                ) : null}
+              </fieldset>
+              <fieldset className="grid w-full gap-4">
+                <label
+                  htmlFor="gender"
+                  className="flex items-center gap-2.5 text-sm font-medium  sm:text-base"
+                >
+                  <span className="grid h-7 w-7 place-items-center rounded-full bg-gray-50 text-base font-bold text-gray-900 sm:text-lg">
+                    5
+                  </span>
+                  <span className="flex-1 text-gray-50">Choose gender</span>
+                </label>
+                <DropdownSelect
+                  control={control}
+                  name="gender"
+                  options={Object.values(GENDER)}
+                />
+                {formState.errors.gender ? (
+                  <p className="-mt-1 text-sm font-medium text-red-500">
+                    {formState.errors.gender.message}
+                  </p>
+                ) : null}
+              </fieldset>
+              <fieldset className="grid w-full gap-4">
+                <label
+                  htmlFor="image"
+                  className="flex items-center gap-2.5 text-sm font-medium sm:text-base"
+                >
+                  <span className="grid h-7 w-7 place-items-center rounded-full bg-gray-50 text-base font-bold text-gray-900 sm:text-lg">
+                    6
+                  </span>
+                  <span className="flex-1 text-gray-50">Upload your image</span>
                 </label>
                 <FileInput
                   name="image"
@@ -285,22 +423,21 @@ const Home: NextPageWithLayout = () => {
                   selectedFile={selectedFile}
                   setSelectedFile={setSelectedFile}
                   disabled={isLoading}
-                  // previewType="name"
                 />
                 {formState.errors.image?.message ? (
-                  <p className="text-sm font-medium text-red-500">
+                  <p className="-mt-1 text-sm font-medium text-red-500">
                     {formState.errors.image.message}
                   </p>
                 ) : null}
               </fieldset>
               <Button
-                aria-label="Generate pokemon"
-                className="w-fit"
+                aria-label="Edit photo"
+                className="w-full"
                 isLoading={isLoading}
                 loadingVariant="dots"
                 disabled={isLoading}
               >
-                Generate pokemon
+                Edit photo
               </Button>
             </form>
           )}

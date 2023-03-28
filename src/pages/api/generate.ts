@@ -4,12 +4,16 @@ import type {
   ResponseData,
   ResponseResult,
 } from "@/types/globals";
+import { GENDER, HAIR_STYLE, SKIN_TONE, type EMOTION } from "@/types/globals";
 import type { NextApiRequest, NextApiResponse } from "next";
 
 interface ExtendedNextApiRequest extends NextApiRequest {
   body: {
-    imageUrl: string;
-    command: string;
+    image: string;
+    skinTone: SKIN_TONE;
+    hairStyle: HAIR_STYLE;
+    emotion: EMOTION;
+    gender: GENDER;
   };
 }
 
@@ -20,18 +24,32 @@ export default async function handler(
   res: NextApiResponse<ResponseData | string>
 ) {
   try {
-    const { imageUrl, command } = req.body;
-    console.log(imageUrl);
+    const { image, skinTone, hairStyle, emotion, gender } = req.body;
+
+    const prompt = `a ${
+      gender === GENDER.DEFAULT
+        ? "face with"
+        : `${gender.toLowerCase()} face with`
+    }  ${
+      skinTone === SKIN_TONE.DEFAULT ? "" : `${skinTone.toLowerCase()} skin,`
+    }  ${
+      hairStyle === HAIR_STYLE.DEFAULT
+        ? ""
+        : `${hairStyle.toLowerCase()} hair, and`
+    } ${`${emotion.toLowerCase()} emotion`}`;
+    console.log(prompt);
+
+    const sanitizedPrompt = prompt.replaceAll(/\s+/g, " ").trim();
 
     // POST request to Replicate to start the image restoration generation process
     const responseBody: ResponseBody = {
       version:
         "7af9a66f36f97fee2fece7dcc927551a951f0022cbdd23747b9212f23fc17021",
       input: {
-        input: imageUrl,
+        input: image,
         neutral: "a face",
         // Target image description
-        target: command,
+        target: sanitizedPrompt,
         // The higher the manipulation strength, the closer the generated image
         // becomes to the target description. Negative values moves the
         // generated image further from the target description

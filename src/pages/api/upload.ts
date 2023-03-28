@@ -23,7 +23,7 @@ export default async function handler(
   const base64 = req.body.base64;
   const uploadedImage = await cloudinary.uploader.upload(base64, {
     resource_type: "image",
-    folder: "poke-gpt",
+    folder: "tweak-photos",
     transformation: [
       {
         width: 600,
@@ -43,17 +43,19 @@ export default async function handler(
   const options: UploadApiOptions = {
     resource_type: "image",
     type: "upload",
-    prefix: "poke-gpt",
-    folder: "poke-gpt",
+    prefix: "tweak-photos",
+    folder: "tweak-photos",
   };
-  const result: UploadApiResponse = await cloudinary.api.resources(options);
+  const result = (await cloudinary.api.resources(options)) as {
+    resources: UploadApiResponse[];
+  };
   const images = result.resources;
   const now = new Date();
   const targetTime = new Date(now.getTime() - 15 * 60 * 1000);
-  images.forEach(async (image: UploadApiResponse) => {
+  images.forEach((image: UploadApiResponse) => {
     const createdAt = new Date(image.created_at);
     if (createdAt < targetTime) {
-      await cloudinary.uploader.destroy(image.public_id);
+      void cloudinary.uploader.destroy(image.public_id);
     }
   });
 }
