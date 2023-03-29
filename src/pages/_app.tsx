@@ -7,6 +7,7 @@ import { type Session } from "next-auth";
 import { SessionProvider } from "next-auth/react";
 import type { AppProps } from "next/app";
 import { type AppType } from "next/app";
+import Head from "next/head";
 import type { ReactElement, ReactNode } from "react";
 
 export type NextPageWithLayout<P = Record<string, unknown>, IP = P> = NextPage<
@@ -31,6 +32,9 @@ const MyApp: AppType<{ session: Session | null }> = ({
 
   return (
     <SessionProvider session={session}>
+      <Head>
+        <title>TweakPhotos</title>
+      </Head>
       {getLayout(<Component {...pageProps} />)}
       <ToastWrapper />
     </SessionProvider>

@@ -5,18 +5,18 @@ import { Check, ChevronUp } from "lucide-react";
 import { Fragment } from "react";
 import { twMerge } from "tailwind-merge";
 
-type DropdownProps<T extends string> = {
+type SelectboxProps<T extends string> = {
   options: T[];
   selected: T;
   setSelected: SetState<T>;
 } & React.HTMLAttributes<HTMLDivElement>;
 
-const Dropdown = <T extends string>({
+const Selectbox = <T extends string>({
   options,
   selected,
   setSelected,
   className,
-}: DropdownProps<T>) => {
+}: SelectboxProps<T>) => {
   return (
     <Listbox value={selected} onChange={setSelected}>
       <div className={twMerge("relative", className)}>
@@ -74,4 +74,4 @@ const Dropdown = <T extends string>({
   );
 };
 
-export default Dropdown;
+export default Selectbox;
