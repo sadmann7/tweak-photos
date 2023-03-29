@@ -1,7 +1,7 @@
 import { env } from "@/env.mjs";
 import type {
   ACCESSORY,
-  COSMETIC,
+  COSMETICS,
   FACIAL_HAIR,
   HAIR_COLOR,
   ResponseBody,
@@ -26,7 +26,7 @@ interface ExtendedNextApiRequest extends NextApiRequest {
     expression: EXPRESSION;
     gender: GENDER;
     accessory: ACCESSORY[];
-    cosmetic: COSMETIC[];
+    cosmetics: COSMETICS[];
   };
 }
 

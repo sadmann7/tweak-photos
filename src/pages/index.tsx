@@ -1,11 +1,13 @@
 import CompareSlider from "@/components/CompareSlider";
 import { Icons } from "@/components/Icons";
 import DefaultLayout from "@/components/layouts/DefaultLayout";
+import Accordion from "@/components/ui/Accordion";
 import Button from "@/components/ui/Button";
 import ColorPicker from "@/components/ui/ColorPicker";
 import DropdownSelect from "@/components/ui/DropdownSelect";
 import FileInput from "@/components/ui/FileInput";
 import Toggle from "@/components/ui/Toggle";
+import ToggleInput from "@/components/ui/ToggleInput";
 import type { NextPageWithLayout } from "@/pages/_app";
 import type {
   OriginalImage,
@@ -14,7 +16,7 @@ import type {
 } from "@/types/globals";
 import {
   ACCESSORY,
-  COSMETIC,
+  COSMETICS,
   EXPRESSION,
   FACIAL_HAIR,
   GENDER,
@@ -27,7 +29,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { AlertTriangle, Download, Loader2, Tv2, Upload } from "lucide-react";
 import Head from "next/head";
 import Image from "next/image";
-import { useState } from "react";
+import { Fragment, useState } from "react";
 import { useForm, type SubmitHandler } from "react-hook-form";
 import { toast } from "react-hot-toast";
 import { z } from "zod";
@@ -44,7 +46,10 @@ const schema = z.object({
   expression: z.nativeEnum(EXPRESSION).default(EXPRESSION.HAPPY),
   gender: z.nativeEnum(GENDER).default(GENDER.NEUTRAL),
   accessory: z.array(z.nativeEnum(ACCESSORY)).default([]),
-  cosmetic: z.array(z.nativeEnum(COSMETIC)).default([]),
+  cosmetics: z.array(z.nativeEnum(COSMETICS)).default([]),
+  removeBg: z.boolean().default(false),
+  restore: z.boolean().default(false),
+  upscale: z.boolean().default(false),
 });
 type TInputs = z.infer<typeof schema>;
 
@@ -403,7 +408,7 @@ const Home: NextPageWithLayout = () => {
                     htmlFor="accessory"
                     className="text-sm font-medium text-gray-50 sm:text-base"
                   >
-                    Choose accessory{" "}
+                    Choose accessories{" "}
                     <span className="text-gray-400">(max 3)</span>
                   </label>
                   <DropdownSelect
@@ -424,23 +429,86 @@ const Home: NextPageWithLayout = () => {
                     htmlFor="cosmetic"
                     className="text-sm font-medium text-gray-50 sm:text-base"
                   >
-                    Choose cosmetic{" "}
+                    Choose cosmetics{" "}
                     <span className="text-gray-400">(max 3)</span>
                   </label>
                   <DropdownSelect
                     control={control}
-                    name="cosmetic"
-                    options={Object.values(COSMETIC)}
+                    name="cosmetics"
+                    options={Object.values(COSMETICS)}
                     isMultiple={true}
                     maxSelected={3}
                   />
-                  {formState.errors.cosmetic ? (
+                  {formState.errors.cosmetics ? (
                     <p className="-mt-1 text-sm font-medium text-red-500">
-                      {formState.errors.cosmetic.message}
+                      {formState.errors.cosmetics.message}
                     </p>
                   ) : null}
                 </fieldset>
               </div>
+              <fieldset className="grid w-full gap-2.5">
+                <label
+                  htmlFor="advancedFeatures"
+                  className="text-sm font-medium text-gray-50 sm:text-base"
+                >
+                  Choose advanced features
+                </label>
+                <Accordion
+                  buttonLabel="Advanced features"
+                  panelContent={
+                    <Fragment>
+                      <fieldset className="grid w-full gap-2.5">
+                        <label htmlFor="restore" className="sr-only">
+                          Restore photo
+                        </label>
+                        <ToggleInput
+                          control={control}
+                          name="restore"
+                          label="Restore photo"
+                          description="Old and blurry face photo restoration"
+                        />
+                        {formState.errors.restore ? (
+                          <p className="-mt-1 text-sm font-medium text-red-500">
+                            {formState.errors.restore.message}
+                          </p>
+                        ) : null}
+                      </fieldset>
+                      <fieldset className="grid w-full gap-2.5">
+                        <label htmlFor="upscale" className="sr-only">
+                          Upscale photo
+                        </label>
+                        <ToggleInput
+                          control={control}
+                          name="upscale"
+                          label="Upscale photo"
+                          description="Low resolution face photo upscale"
+                        />
+                        {formState.errors.upscale ? (
+                          <p className="-mt-1 text-sm font-medium text-red-500">
+                            {formState.errors.upscale.message}
+                          </p>
+                        ) : null}
+                      </fieldset>
+                      <fieldset className="grid w-full gap-2.5">
+                        <label htmlFor="upscale" className="sr-only">
+                          Remove background
+                        </label>
+                        <ToggleInput
+                          control={control}
+                          name="removeBg"
+                          label="Remove background"
+                          description="Remove background from your face photo"
+                        />
+                        {formState.errors.removeBg ? (
+                          <p className="-mt-1 text-sm font-medium text-red-500">
+                            {formState.errors.removeBg.message}
+                          </p>
+                        ) : null}
+                      </fieldset>
+                    </Fragment>
+                  }
+                />
+              </fieldset>
               <fieldset className="grid w-full gap-2.5">
                 <label
                   htmlFor="image"

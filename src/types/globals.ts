@@ -88,7 +88,7 @@ export enum ACCESSORY {
   MASK = "Mask",
 }
 
-export enum COSMETIC {
+export enum COSMETICS {
   LIPSTICK = "Lipstick",
   BLUSH = "Blush",
   EYEBROW = "Eyebrow",
