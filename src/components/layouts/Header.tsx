@@ -1,12 +1,10 @@
 import { Icons } from "@/components/Icons";
-import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { twMerge } from "tailwind-merge";
 
 const Header = () => {
   const [isScrolled, setIsScrolled] = useState<boolean>(false);
-  const session = useSession();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -21,7 +19,7 @@ const Header = () => {
     <header
       aria-label="header"
       className={twMerge(
-        "fixed top-0 left-0 z-20 flex w-full items-center gap-4",
+        "fixed left-0 top-0 z-20 flex w-full items-center gap-4",
         isScrolled
           ? "bg-gradient-to-t from-gray-700/80 to-gray-800/80 backdrop-blur-sm backdrop-filter"
           : "bg-transparent"
@@ -39,14 +37,13 @@ const Header = () => {
         <div className="flex items-center gap-4">
           <Link
             aria-label="sign in"
-            href={
-              session.status === "authenticated"
-                ? "/dashboard"
-                : "api/auth/signin"
-            }
-            className="rounded-md bg-blue-600 px-4 py-1.5 text-base transition-colors hover:bg-blue-700 active:scale-95 sm:text-base"
+            href="api/auth/signin"
+            className={twMerge(
+              "rounded-md bg-blue-600 px-4 py-1.5 text-base transition-colors hover:bg-blue-700 active:scale-95 sm:text-base",
+              "focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2 focus:ring-offset-gray-900"
+            )}
           >
-            Dashboard
+            Sign up
           </Link>
         </div>
       </nav>

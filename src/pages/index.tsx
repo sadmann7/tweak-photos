@@ -27,6 +27,7 @@ import {
 import { downloadFile } from "@/utils/download";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { AlertTriangle, Download, Loader2, Tv2, Upload } from "lucide-react";
+import { useSession } from "next-auth/react";
 import Head from "next/head";
 import Image from "next/image";
 import { Fragment, useState } from "react";
@@ -63,6 +64,7 @@ const Home: NextPageWithLayout = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isDownloading, setIsDownloading] = useState(false);
+  const session = useSession();
 
   // react-hook-form
   const { handleSubmit, formState, control, setValue, reset } =
@@ -451,7 +453,10 @@ const Home: NextPageWithLayout = () => {
                   htmlFor="advancedFeatures"
                   className="text-sm font-medium text-gray-50 sm:text-base"
                 >
-                  Choose advanced features
+                  Choose advanced features{" "}
+                  <span className="text-gray-400">
+                    (sign in to use these features)
+                  </span>
                 </label>
                 <Accordion
                   buttonLabel="Advanced features"
@@ -466,6 +471,10 @@ const Home: NextPageWithLayout = () => {
                           name="restore"
                           label="Restore photo"
                           description="Old and blurry face photo restoration"
+                          disabled={
+                            session.status === "loading" ||
+                            session.status === "unauthenticated"
+                          }
                         />
                         {formState.errors.restore ? (
                           <p className="-mt-1 text-sm font-medium text-red-500">
@@ -482,6 +491,10 @@ const Home: NextPageWithLayout = () => {
                           name="upscale"
                           label="Upscale photo"
                           description="Low resolution face photo upscaling"
+                          disabled={
+                            session.status === "loading" ||
+                            session.status === "unauthenticated"
+                          }
                         />
                         {formState.errors.upscale ? (
                           <p className="-mt-1 text-sm font-medium text-red-500">
@@ -497,7 +510,11 @@ const Home: NextPageWithLayout = () => {
                           control={control}
                           name="removeBg"
                           label="Remove background"
-                          description="Remove background from your face photo"
+                          description="Face photo background removal"
+                          disabled={
+                            session.status === "loading" ||
+                            session.status === "unauthenticated"
+                          }
                         />
                         {formState.errors.removeBg ? (
                           <p className="-mt-1 text-sm font-medium text-red-500">
