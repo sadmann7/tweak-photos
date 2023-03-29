@@ -22,14 +22,14 @@ const Dropdown = <T extends string>({
       <div className={twMerge("relative", className)}>
         <Listbox.Button
           className={twMerge(
-            "relative w-full cursor-pointer rounded-md border border-gray-400 bg-transparent py-2.5 pl-4 pr-10 text-left text-base text-gray-50 shadow-md transition-colors",
-            "focus:outline-none focus-visible:ring-2 focus-visible:ring-gray-300 focus-visible:ring-offset-2 focus-visible:ring-offset-gray-800"
+            "relative w-full cursor-pointer rounded-md border border-gray-500 bg-gray-800 py-2.5 pl-4 pr-10 text-left text-base text-gray-100 shadow-md transition-colors",
+            "focus:outline-none focus-visible:ring-2 focus-visible:ring-gray-400 focus-visible:ring-offset-2 focus-visible:ring-offset-gray-900"
           )}
         >
           <span className="block truncate">{toTitleCase(selected)}</span>
           <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
             <ChevronUp
-              className="ui-open:rotate-180 h-5 w-5 text-gray-200 transition-transform"
+              className="h-5 w-5 text-gray-200 transition-transform ui-open:rotate-180"
               aria-hidden="true"
             />
           </span>

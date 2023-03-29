@@ -44,7 +44,7 @@ const DropdownSelect = <TFieldValues extends FieldValues>({
             <Listbox.Button
               className={twMerge(
                 "relative w-full cursor-pointer rounded-md border border-gray-500 bg-gray-800 py-2.5 pl-4 pr-10 text-left text-base text-gray-100 shadow-md transition-colors",
-                "focus:outline-none focus-visible:ring-2 focus-visible:ring-gray-300 focus-visible:ring-offset-2 focus-visible:ring-offset-gray-800"
+                "focus:outline-none focus-visible:ring-2 focus-visible:ring-gray-400 focus-visible:ring-offset-2 focus-visible:ring-offset-gray-900"
               )}
             >
               <span className="block truncate">
@@ -72,7 +72,7 @@ const DropdownSelect = <TFieldValues extends FieldValues>({
                     key={option}
                     className={twMerge(
                       "relative select-none px-4 py-2 text-gray-200 transition",
-                      "ui-selected:bg-gray-600/80 ui-active:bg-gray-600 hover:ui-active:bg-gray-700/60",
+                      "ui-selected:bg-gray-600 ui-active:bg-gray-700 hover:ui-active:bg-gray-700/80",
                       isMultiple &&
                         selected.length >= maxSelected &&
                         selected.indexOf(option) === -1

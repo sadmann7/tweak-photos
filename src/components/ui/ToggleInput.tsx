@@ -51,17 +51,17 @@ const ToggleInput = <TFieldValues extends FieldValues>({
                 setEnabled(val);
               }}
               className={twMerge(
-                "relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out",
+                "relative inline-flex h-6 w-11 shrink-0 cursor-pointer items-center rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out",
                 "focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2  focus:ring-offset-gray-900",
-                enabled ? "bg-blue-600" : "bg-blue-400"
+                enabled ? "bg-blue-600" : "bg-gray-500"
               )}
             >
               <span className="sr-only">{srText}</span>
               <span
                 aria-hidden="true"
                 className={twMerge(
-                  "inline-block h-5 w-5 rounded-full bg-gray-50 shadow ring-0 transition duration-200 ease-in-out",
-                  enabled ? "translate-x-5" : "translate-x-0"
+                  "inline-block h-[1.125rem] w-[1.125rem] rounded-full bg-gray-100 shadow ring-0 transition duration-200 ease-in-out",
+                  enabled ? "translate-x-5" : "translate-x-0.5"
                 )}
               />
             </Switch>

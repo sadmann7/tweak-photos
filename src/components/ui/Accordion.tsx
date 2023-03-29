@@ -15,7 +15,7 @@ const Accordion = ({ buttonLabel, panelContent }: AccordionProps) => {
           <Disclosure.Button
             className={twMerge(
               "text-basae flex w-full justify-between rounded-md border border-gray-500 bg-gray-800 px-4 py-2.5 text-left font-medium text-gray-100 hover:bg-gray-800/50",
-              "focus:outline-none focus-visible:ring-2 focus-visible:ring-gray-300 focus-visible:ring-offset-2 focus-visible:ring-offset-gray-800"
+              "focus:outline-none focus-visible:ring-2 focus-visible:ring-gray-400 focus-visible:ring-offset-2 focus-visible:ring-offset-gray-900"
             )}
           >
             <span>{buttonLabel}</span>

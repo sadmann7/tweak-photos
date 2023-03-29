@@ -167,7 +167,7 @@ const Home: NextPageWithLayout = () => {
                 href="https://github.com/sadmann7/npm-picker"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center justify-center gap-2 rounded-md border border-gray-700 bg-transparent px-4 py-2 text-gray-50 transition-colors hover:bg-gray-800 focus:ring-2 focus:ring-gray-400 focus:ring-offset-2 focus:ring-offset-gray-800 active:scale-95 xxs:w-fit xxs:px-4"
+                className="flex items-center justify-center gap-2 rounded-md border border-gray-700 bg-transparent px-4 py-2.5 text-gray-50 transition-colors hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2 focus:ring-offset-gray-900 active:scale-95 xxs:w-fit xxs:px-4"
               >
                 <Icons.gitHub className="h-5 w-5" aria-hidden="true" />
                 <span className="sr-only text-xs font-medium xxs:not-sr-only sm:text-sm">
@@ -177,7 +177,7 @@ const Home: NextPageWithLayout = () => {
               <Button
                 aria-label="watch demo"
                 variant="ghost"
-                className="h-auto w-fit gap-2 border border-gray-700 px-4 py-2 active:scale-95"
+                className="h-auto w-fit gap-2 border border-gray-700 px-4 py-2.5 active:scale-95"
               >
                 <Tv2 className="h-5 w-5" aria-hidden="true" />
                 <span className="sr-only text-xs font-medium xxs:not-sr-only sm:text-sm">
