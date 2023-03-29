@@ -1,5 +1,9 @@
 import { env } from "@/env.mjs";
 import type {
+  ACCESSORY,
+  COSMETIC,
+  FACIAL_HAIR,
+  HAIR_COLOR,
   ResponseBody,
   ResponseData,
   ResponseResult,
@@ -17,8 +21,12 @@ interface ExtendedNextApiRequest extends NextApiRequest {
     image: string;
     skinTone: SKIN_TONE;
     hairStyle: HAIR_STYLE;
+    facialHair: FACIAL_HAIR;
+    facialHairColor: HAIR_COLOR;
     expression: EXPRESSION;
     gender: GENDER;
+    accessory: ACCESSORY[];
+    cosmetic: COSMETIC[];
   };
 }
 
@@ -32,7 +40,7 @@ export default async function handler(
     const { image, skinTone, hairStyle, expression, gender } = req.body;
 
     const prompt = `a ${
-      gender === GENDER.DEFAULT
+      gender === GENDER.NEUTRAL
         ? "face with"
         : `${gender.toLowerCase()} face with`
     }  ${

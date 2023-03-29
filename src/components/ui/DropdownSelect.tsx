@@ -13,7 +13,7 @@ type DropdownSelectProps<
   name: Path<TFieldValues>;
   options: PathValue<TFieldValues, Path<TFieldValues>>[];
   isMultiple?: boolean;
-  isRequired?: boolean;
+  maxSelected?: number;
 };
 
 const DropdownSelect = <TFieldValues extends FieldValues>({
@@ -21,17 +21,16 @@ const DropdownSelect = <TFieldValues extends FieldValues>({
   name,
   options,
   isMultiple = false,
-  isRequired = true,
+  maxSelected = 1,
 }: DropdownSelectProps<TFieldValues>) => {
   const [selected, setSelected] = useState<string | string[]>(
-    isMultiple ? [] : options[0] || ""
+    isMultiple ? [] : options[0] ?? ""
   );
 
   return (
     <Controller
       control={control}
       name={name}
-      rules={{ required: isRequired }}
       render={({ field: { onChange } }) => (
         <Listbox
           value={selected}
@@ -44,7 +43,7 @@ const DropdownSelect = <TFieldValues extends FieldValues>({
           <div className="relative">
             <Listbox.Button
               className={twMerge(
-                "relative w-full cursor-pointer rounded-md border border-gray-400 bg-gray-50 py-2.5 pl-4 pr-10 text-left text-base font-medium text-gray-900 shadow-md transition-colors",
+                "relative w-full cursor-pointer rounded-md border border-gray-500 bg-gray-800 py-2.5 pl-4 pr-10 text-left text-base text-gray-100 shadow-md transition-colors",
                 "focus:outline-none focus-visible:ring-2 focus-visible:ring-gray-300 focus-visible:ring-offset-2 focus-visible:ring-offset-gray-800"
               )}
             >
@@ -53,7 +52,7 @@ const DropdownSelect = <TFieldValues extends FieldValues>({
               </span>
               <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
                 <ChevronUp
-                  className="h-5 w-5 text-gray-900 transition-transform ui-open:rotate-180"
+                  className="h-5 w-5 text-gray-400 transition-transform ui-open:rotate-180"
                   aria-hidden="true"
                 />
               </span>
@@ -67,21 +66,31 @@ const DropdownSelect = <TFieldValues extends FieldValues>({
               leaveFrom="transform opacity-100 scale-100"
               leaveTo="transform opacity-0 scale-95"
             >
-              <Listbox.Options className="absolute z-10 mt-2 max-h-60 w-full overflow-auto rounded-md bg-gray-50 py-1 text-sm shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+              <Listbox.Options className="absolute z-10 mt-2 max-h-60 w-full overflow-auto rounded-md bg-gray-800 py-1 text-sm shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
                 {options.map((option) => (
                   <Listbox.Option
                     key={option}
                     className={twMerge(
-                      "relative cursor-pointer select-none px-4 py-2 font-medium text-gray-800 transition",
-                      "ui-selected:bg-gray-300/70 ui-active:bg-gray-300 hover:ui-active:bg-gray-300/50"
+                      "relative select-none px-4 py-2 text-gray-200 transition",
+                      "ui-selected:bg-gray-600/80 ui-active:bg-gray-600 hover:ui-active:bg-gray-700/60",
+                      isMultiple &&
+                        selected.length >= maxSelected &&
+                        selected.indexOf(option) === -1
+                        ? "pointer-events-none"
+                        : "cursor-pointer"
                     )}
                     value={option}
+                    disabled={
+                      isMultiple &&
+                      selected.length >= maxSelected &&
+                      selected.indexOf(option) === -1
+                    }
                   >
                     {({ selected }) => (
                       <>
                         <span className="block truncate">{option}</span>
                         {selected ? (
-                          <span className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-800">
+                          <span className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-300">
                             <Check className="h-5 w-5" aria-hidden="true" />
                           </span>
                         ) : null}

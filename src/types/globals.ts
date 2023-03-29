@@ -24,15 +24,19 @@ export enum HAIR_STYLE {
 
 export enum HAIR_COLOR {
   DEFAULT = "Default",
-  BLONDE = "Blonde",
-  BROWN = "Brown",
-  BLACK = "Black",
-  RED = "Red",
-  GRAY = "Gray",
-  WHITE = "White",
-  PINK = "Pink",
-  BLUE = "Blue",
-  BOWL_CUT = "Bowl Cut",
+  BLACK = "#000000",
+  BROWN = "#964b00",
+  BLONDE = "#ffff00",
+  RED = "#ff0000",
+  GREY = "#808080",
+  WHITE = "#ffffff",
+  AUBURN = "#a52a2a",
+  GINGER = "#ff4500",
+  BLONDISH_BROWN = "#daa520",
+  DARK_BROWN = "#654321",
+  LIGHT_BROWN = "#8b4513",
+  STRAWBERRY_BLONDE = "#ffb6c1",
+  PURPLE = "#800080",
 }
 
 export enum FACIAL_HAIR {
@@ -53,10 +57,9 @@ export enum EYE_COLOR {
 }
 
 export enum GENDER {
-  DEFAULT = "Default",
+  NEUTRAL = "Neutral",
   MALE = "Male",
   FEMALE = "Female",
-  OTHERS = "Others",
 }
 
 export enum AGE {
@@ -97,8 +100,6 @@ export enum COSMETIC {
   EARRINGS = "Earrings",
   TATTOO = "Tattoo",
 }
-
-// random accessory feature can be added to the prompt
 
 // form file field
 export type OriginalImage = {

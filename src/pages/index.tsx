@@ -2,6 +2,7 @@ import CompareSlider from "@/components/CompareSlider";
 import { Icons } from "@/components/Icons";
 import DefaultLayout from "@/components/layouts/DefaultLayout";
 import Button from "@/components/ui/Button";
+import ColorInput from "@/components/ui/ColorInput";
 import DropdownSelect from "@/components/ui/DropdownSelect";
 import FileInput from "@/components/ui/FileInput";
 import Toggle from "@/components/ui/Toggle";
@@ -41,7 +42,7 @@ const schema = z.object({
   facialHair: z.nativeEnum(FACIAL_HAIR).default(FACIAL_HAIR.DEFAULT),
   facialHairColor: z.nativeEnum(HAIR_COLOR).default(HAIR_COLOR.DEFAULT),
   expression: z.nativeEnum(EXPRESSION).default(EXPRESSION.HAPPY),
-  gender: z.nativeEnum(GENDER).default(GENDER.DEFAULT),
+  gender: z.nativeEnum(GENDER).default(GENDER.NEUTRAL),
   accessory: z.array(z.nativeEnum(ACCESSORY)).default([]),
   cosmetic: z.array(z.nativeEnum(COSMETIC)).default([]),
 });
@@ -65,8 +66,9 @@ const Home: NextPageWithLayout = () => {
     });
   const onSubmit: SubmitHandler<TInputs> = async (data) => {
     console.log(data);
-    if (!(data.image instanceof File)) return;
-    await generateImage(data);
+    await new Promise((resolve) => setTimeout(resolve, 200));
+    // if (!(data.image instanceof File)) return;
+    // await generateImage(data);
   };
 
   // generate image
@@ -125,6 +127,7 @@ const Home: NextPageWithLayout = () => {
           setIsLoading(false);
         } else {
           setGeneratedImage(response3.output);
+
           setTimeout(() => {
             setIsLoading(false);
           }, 1300);
@@ -144,7 +147,7 @@ const Home: NextPageWithLayout = () => {
       <Head>
         <title>TweakPhotos</title>
       </Head>
-      <main className="w-full pt-40 pb-32 sm:pt-32">
+      <main className="w-full pb-32 pt-40 sm:pt-32">
         <div className="container grid max-w-5xl place-items-center gap-12 sm:gap-14">
           <div className="grid w-full  max-w-4xl place-items-center gap-5">
             <h1 className="text-center text-4xl font-bold leading-tight text-gray-200 sm:text-6xl sm:leading-tight">
@@ -299,18 +302,15 @@ const Home: NextPageWithLayout = () => {
           ) : (
             <form
               aria-label="Generate pokemon form"
-              className="grid w-full max-w-lg place-items-center gap-8"
+              className="grid w-full max-w-lg place-items-center gap-6"
               onSubmit={(...args) => void handleSubmit(onSubmit)(...args)}
             >
-              <fieldset className="grid w-full gap-4">
+              <fieldset className="grid w-full gap-2.5">
                 <label
                   htmlFor="skinTone"
-                  className="flex items-center gap-2.5 text-sm font-medium  sm:text-base"
+                  className="text-sm font-medium text-gray-50 sm:text-base"
                 >
-                  <span className="grid h-7 w-7 place-items-center rounded-full bg-gray-50 text-base font-bold text-gray-900 sm:text-lg">
-                    1
-                  </span>
-                  <span className="flex-1 text-gray-50">Choose skin tone</span>
+                  Choose skin tone
                 </label>
                 <DropdownSelect
                   control={control}
@@ -323,36 +323,50 @@ const Home: NextPageWithLayout = () => {
                   </p>
                 ) : null}
               </fieldset>
-              <fieldset className="grid w-full gap-4">
-                <label
-                  htmlFor="hairStyle"
-                  className="flex items-center gap-2.5 text-sm font-medium  sm:text-base"
-                >
-                  <span className="grid h-7 w-7 place-items-center rounded-full bg-gray-50 text-base font-bold text-gray-900 sm:text-lg">
-                    2
-                  </span>
-                  <span className="flex-1 text-gray-50">Choose hair style</span>
-                </label>
-                <DropdownSelect
-                  control={control}
-                  name="hairStyle"
-                  options={Object.values(HAIR_STYLE)}
-                />
-                {formState.errors.hairStyle ? (
-                  <p className="-mt-1 text-sm font-medium text-red-500">
-                    {formState.errors.hairStyle.message}
-                  </p>
-                ) : null}
-              </fieldset>
-              <fieldset className="grid w-full gap-4">
+              <div className="flex w-full flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
+                <fieldset className="grid w-full gap-2.5">
+                  <label
+                    htmlFor="hairStyle"
+                    className="text-sm font-medium text-gray-50 sm:text-base"
+                  >
+                    Choose hair style
+                  </label>
+                  <DropdownSelect
+                    control={control}
+                    name="hairStyle"
+                    options={Object.values(HAIR_STYLE)}
+                  />
+                  {formState.errors.hairStyle ? (
+                    <p className="-mt-1 text-sm font-medium text-red-500">
+                      {formState.errors.hairStyle.message}
+                    </p>
+                  ) : null}
+                </fieldset>
+                <fieldset className="grid w-full gap-2.5">
+                  <label
+                    htmlFor="hairColor"
+                    className="text-sm font-medium text-gray-50 sm:text-base"
+                  >
+                    Choose hair color
+                  </label>
+                  <ColorInput
+                    control={control}
+                    name="hairColor"
+                    options={Object.values(HAIR_COLOR)}
+                  />
+                  {formState.errors.hairColor ? (
+                    <p className="-mt-1 text-sm font-medium text-red-500">
+                      {formState.errors.hairColor.message}
+                    </p>
+                  ) : null}
+                </fieldset>
+              </div>
+              <fieldset className="grid w-full gap-2.5">
                 <label
                   htmlFor="expression"
-                  className="flex items-center gap-2.5 text-sm font-medium  sm:text-base"
+                  className="text-sm font-medium text-gray-50 sm:text-base"
                 >
-                  <span className="grid h-7 w-7 place-items-center rounded-full bg-gray-50 text-base font-bold text-gray-900 sm:text-lg">
-                    4
-                  </span>
-                  <span className="flex-1 text-gray-50">Choose emotion</span>
+                  Choose expression
                 </label>
                 <DropdownSelect
                   control={control}
@@ -365,15 +379,12 @@ const Home: NextPageWithLayout = () => {
                   </p>
                 ) : null}
               </fieldset>
-              <fieldset className="grid w-full gap-4">
+              <fieldset className="grid w-full gap-2.5">
                 <label
                   htmlFor="gender"
-                  className="flex items-center gap-2.5 text-sm font-medium  sm:text-base"
+                  className="text-sm font-medium text-gray-50 sm:text-base"
                 >
-                  <span className="grid h-7 w-7 place-items-center rounded-full bg-gray-50 text-base font-bold text-gray-900 sm:text-lg">
-                    5
-                  </span>
-                  <span className="flex-1 text-gray-50">Choose gender</span>
+                  Choose gender
                 </label>
                 <DropdownSelect
                   control={control}
@@ -387,24 +398,20 @@ const Home: NextPageWithLayout = () => {
                 ) : null}
               </fieldset>
               <div className="flex w-full flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
-                <fieldset className="grid w-full gap-4">
+                <fieldset className="grid w-full gap-2.5">
                   <label
                     htmlFor="accessory"
-                    className="flex items-center gap-2.5 text-sm font-medium  sm:text-base"
+                    className="text-sm font-medium text-gray-50 sm:text-base"
                   >
-                    <span className="grid h-7 w-7 place-items-center rounded-full bg-gray-50 text-base font-bold text-gray-900 sm:text-lg">
-                      6
-                    </span>
-                    <span className="flex-1 text-gray-50">
-                      Choose accessory
-                    </span>
+                    Choose accessory{" "}
+                    <span className="text-gray-400">(max 3)</span>
                   </label>
                   <DropdownSelect
                     control={control}
                     name="accessory"
                     options={Object.values(ACCESSORY)}
                     isMultiple={true}
-                    isRequired={false}
+                    maxSelected={3}
                   />
                   {formState.errors.accessory ? (
                     <p className="-mt-1 text-sm font-medium text-red-500">
@@ -412,22 +419,20 @@ const Home: NextPageWithLayout = () => {
                     </p>
                   ) : null}
                 </fieldset>
-                <fieldset className="grid w-full gap-4">
+                <fieldset className="grid w-full gap-2.5">
                   <label
                     htmlFor="cosmetic"
-                    className="flex items-center gap-2.5 text-sm font-medium  sm:text-base"
+                    className="text-sm font-medium text-gray-50 sm:text-base"
                   >
-                    <span className="grid h-7 w-7 place-items-center rounded-full bg-gray-50 text-base font-bold text-gray-900 sm:text-lg">
-                      7
-                    </span>
-                    <span className="flex-1 text-gray-50">Choose cosmetic</span>
+                    Choose cosmetic{" "}
+                    <span className="text-gray-400">(max 3)</span>
                   </label>
                   <DropdownSelect
                     control={control}
                     name="cosmetic"
                     options={Object.values(COSMETIC)}
                     isMultiple={true}
-                    isRequired={false}
+                    maxSelected={3}
                   />
                   {formState.errors.cosmetic ? (
                     <p className="-mt-1 text-sm font-medium text-red-500">
@@ -436,15 +441,12 @@ const Home: NextPageWithLayout = () => {
                   ) : null}
                 </fieldset>
               </div>
-              <fieldset className="grid w-full gap-4">
+              <fieldset className="grid w-full gap-2.5">
                 <label
                   htmlFor="image"
-                  className="flex items-center gap-2.5 text-sm font-medium sm:text-base"
+                  className="text-sm font-medium text-gray-50 sm:text-base"
                 >
-                  <span className="grid h-7 w-7 place-items-center rounded-full bg-gray-50 text-base font-bold text-gray-900 sm:text-lg">
-                    8
-                  </span>
-                  <span className="flex-1 text-gray-50">Upload your image</span>
+                  Upload your image
                 </label>
                 <FileInput
                   name="image"
