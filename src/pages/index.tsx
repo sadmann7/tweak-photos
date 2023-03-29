@@ -2,7 +2,7 @@ import CompareSlider from "@/components/CompareSlider";
 import { Icons } from "@/components/Icons";
 import DefaultLayout from "@/components/layouts/DefaultLayout";
 import Button from "@/components/ui/Button";
-import ColorInput from "@/components/ui/ColorInput";
+import ColorPicker from "@/components/ui/ColorPicker";
 import DropdownSelect from "@/components/ui/DropdownSelect";
 import FileInput from "@/components/ui/FileInput";
 import Toggle from "@/components/ui/Toggle";
@@ -323,7 +323,7 @@ const Home: NextPageWithLayout = () => {
                   </p>
                 ) : null}
               </fieldset>
-              <div className="flex w-full flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
+              <div className="flex w-full flex-col gap-5 sm:flex-row sm:items-start sm:justify-between">
                 <fieldset className="grid w-full gap-2.5">
                   <label
                     htmlFor="hairStyle"
@@ -349,7 +349,7 @@ const Home: NextPageWithLayout = () => {
                   >
                     Choose hair color
                   </label>
-                  <ColorInput
+                  <ColorPicker
                     control={control}
                     name="hairColor"
                     options={Object.values(HAIR_COLOR)}
@@ -397,7 +397,7 @@ const Home: NextPageWithLayout = () => {
                   </p>
                 ) : null}
               </fieldset>
-              <div className="flex w-full flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
+              <div className="flex w-full flex-col gap-5 sm:flex-row sm:items-start sm:justify-between">
                 <fieldset className="grid w-full gap-2.5">
                   <label
                     htmlFor="accessory"

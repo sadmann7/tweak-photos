@@ -10,6 +10,7 @@
     "start": "next start"
   },
   "dependencies": {
+    "@ctrl/tinycolor": "^3.6.0",
     "@headlessui/react": "^1.7.13",
     "@headlessui/tailwindcss": "^0.1.2",
     "@hookform/resolvers": "^3.0.0",
