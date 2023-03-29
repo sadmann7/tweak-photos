@@ -97,12 +97,12 @@ const FileInput = <TFieldValues extends FieldValues>({
     <div
       {...getRootProps()}
       className={twMerge(
-        "group relative grid h-60 w-full cursor-pointer place-items-center rounded-lg border-2 border-dashed p-2 text-center transition",
+        "group relative grid h-60 w-full cursor-pointer place-items-center rounded-lg border-2 border-dashed p-2 text-center transition hover:bg-gray-700/25",
         "focus:outline-none focus-visible:border-solid focus-visible:ring-2 focus-visible:ring-gray-400 focus-visible:ring-offset-2 focus-visible:ring-offset-gray-900",
         isDragActive ? "border-gray-400" : "border-gray-500",
         selectedFile && previewType === "image"
-          ? "h-full border-none p-0 hover:bg-gray-700/25"
-          : "h-60 hover:bg-gray-700/50",
+          ? "h-full border-none p-0"
+          : "h-60",
         disabled
           ? "pointer-events-none opacity-50"
           : "pointer-events-auto opacity-100",
@@ -111,24 +111,16 @@ const FileInput = <TFieldValues extends FieldValues>({
       {...props}
     >
       <input {...getInputProps()} />
-      {isDragActive ? (
-        <div className="grid place-items-center gap-2 sm:px-10">
-          <UploadCloud
-            className={twMerge(
-              "h-10 w-10 text-gray-400",
-              isDragActive ? "animate-bounce" : ""
-            )}
-            aria-hidden="true"
-          />
-          <p className="text-base font-medium text-gray-300 sm:text-lg">
-            Drop the file here
-          </p>
-        </div>
-      ) : isUploading ? (
+      {isUploading ? (
         <Loader2 className="h-16 w-16 animate-spin" />
       ) : selectedFile ? (
         previewType === "image" ? (
           <div className="group relative aspect-square h-full max-h-[420px] w-full overflow-hidden rounded-lg">
+            {isDragActive ? (
+              <div className="absolute inset-0 grid h-full w-full place-items-center bg-gray-950/70">
+                <DragActive isDragActive={isDragActive} />
+              </div>
+            ) : null}
             <Image
               src={URL.createObjectURL(selectedFile)}
               alt={selectedFile.name ?? "preview"}
@@ -138,13 +130,24 @@ const FileInput = <TFieldValues extends FieldValues>({
             />
           </div>
         ) : (
-          <p className="text-base font-medium text-gray-200 sm:text-lg">
-            {selectedFile.name}
-          </p>
+          <div className="w-full rounded-lg">
+            {isDragActive ? (
+              <DragActive isDragActive={isDragActive} />
+            ) : (
+              <p className="text-base font-medium text-gray-200 sm:text-lg">
+                {selectedFile.name}
+              </p>
+            )}
+          </div>
         )
+      ) : isDragActive ? (
+        <DragActive isDragActive={isDragActive} />
       ) : (
-        <div className="grid place-items-center gap-1 sm:px-10">
-          <UploadCloud className="h-10 w-10 text-gray-400" aria-hidden="true" />
+        <div className="group grid place-items-center gap-1 sm:px-10">
+          <UploadCloud
+            className="group-hover:animate-swing h-10 w-10 text-gray-200"
+            aria-hidden="true"
+          />
           <p className="mt-2 text-base font-medium text-gray-200 sm:text-lg">
             Drag {`'n'`} drop file here, or click to select file
           </p>
@@ -159,3 +162,18 @@ const FileInput = <TFieldValues extends FieldValues>({
 };
 
 export default FileInput;
+
+const DragActive = ({ isDragActive }: { isDragActive: boolean }) => {
+  return (
+    <div className="grid place-items-center gap-2 text-gray-200 sm:px-10">
+      <UploadCloud
+        className={twMerge(
+          "h-10 w-10 group-hover:animate-bounce",
+          isDragActive ? "animate-bounce" : ""
+        )}
+        aria-hidden="true"
+      />
+      <p className="text-base font-medium sm:text-lg">Drop the file here</p>
+    </div>
+  );
+};

@@ -481,7 +481,7 @@ const Home: NextPageWithLayout = () => {
                           control={control}
                           name="upscale"
                           label="Upscale photo"
-                          description="Low resolution face photo upscale"
+                          description="Low resolution face photo upscaling"
                         />
                         {formState.errors.upscale ? (
                           <p className="-mt-1 text-sm font-medium text-red-500">
@@ -509,7 +509,7 @@ const Home: NextPageWithLayout = () => {
                   }
                 />
               </fieldset>
-              <fieldset className="grid w-full gap-2.5">
+              <fieldset className="grid w-full gap-3">
                 <label
                   htmlFor="image"
                   className="text-sm font-medium text-gray-50 sm:text-base"

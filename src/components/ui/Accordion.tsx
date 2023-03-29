@@ -1,5 +1,6 @@
 import { Disclosure, Transition } from "@headlessui/react";
 import { ChevronUp } from "lucide-react";
+import * as React from "react";
 import { twMerge } from "tailwind-merge";
 
 type AccordionProps = {
@@ -32,7 +33,7 @@ const Accordion = ({ buttonLabel, panelContent }: AccordionProps) => {
             leaveFrom="transform scale-100 opacity-100"
             leaveTo="transform scale-95 opacity-0"
           >
-            <Disclosure.Panel className="grid gap-5 px-1 pb-2 pt-4">
+            <Disclosure.Panel className="mt-4 grid gap-5 rounded-md bg-gray-800 px-5 py-4">
               {panelContent}
             </Disclosure.Panel>
           </Transition>
