@@ -16,8 +16,6 @@ const Header = () => {
   const [isScrolled, setIsScrolled] = useState<boolean>(false);
   const session = useSession();
 
-  console.log(session);
-
   useEffect(() => {
     const handleScroll = () => {
       const isScrolled = window.scrollY > 0;
@@ -52,7 +50,7 @@ const Header = () => {
             aria-label="sign in"
             href="api/auth/signin"
             className={twMerge(
-              "rounded-md bg-blue-600 px-4 py-1.5 text-base transition-colors hover:bg-blue-700 active:scale-95 sm:text-base",
+              "grid h-10 place-items-center rounded-md bg-blue-600 px-5 py-1.5 text-base transition-colors hover:bg-blue-700 active:scale-95 sm:text-base",
               "focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2 focus:ring-offset-gray-900"
             )}
           >
@@ -63,7 +61,7 @@ const Header = () => {
             <div>
               <Menu.Button
                 className={twMerge(
-                  "w-full rounded-full transition-colors hover:opacity-80 active:scale-95 disabled:pointer-events-none disabled:opacity-70",
+                  "w-full rounded-full transition-opacity hover:opacity-90 active:scale-95 disabled:pointer-events-none disabled:opacity-70",
                   "focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2 focus:ring-offset-gray-900"
                 )}
                 disabled={!session.data}
@@ -102,8 +100,8 @@ const Header = () => {
                       <Link
                         href={link.href}
                         className={twMerge(
-                          "flex w-full items-center gap-2 rounded-md px-2 py-2 text-sm",
-                          "ui-active:bg-gray-500/70 ui-active:text-gray-50 ui-not-active:text-gray-100"
+                          "flex w-full items-center gap-2 rounded px-2 py-2 text-sm",
+                          "ui-active:bg-gray-500/70 ui-active:text-gray-100 ui-not-active:text-gray-200"
                         )}
                       >
                         <link.icon className="h-4 w-4" aria-hidden="true" />

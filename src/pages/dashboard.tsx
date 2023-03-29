@@ -6,9 +6,9 @@ const Dashboard: NextPageWithLayout = () => {
   return (
     <>
       <Head>
-        <title>TweakPhotos</title>
+        <title>Dashboard | TweakPhotos</title>
       </Head>
-      <main className="w-full pt-40 pb-32 sm:pt-32">
+      <main className="w-full pb-32 pt-40 sm:pt-32">
         <div className="container grid max-w-5xl place-items-center gap-12 sm:gap-14">
           <div className="grid place-items-center gap-2">
             <h1 className="text-center text-4xl font-bold">Dashboard page</h1>

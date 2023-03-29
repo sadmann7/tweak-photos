@@ -48,9 +48,9 @@ const schema = z.object({
   gender: z.nativeEnum(GENDER).default(GENDER.NEUTRAL),
   accessory: z.array(z.nativeEnum(ACCESSORY)).default([]),
   cosmetics: z.array(z.nativeEnum(COSMETICS)).default([]),
-  removeBg: z.boolean().default(false),
-  restore: z.boolean().default(false),
-  upscale: z.boolean().default(false),
+  restored: z.boolean().default(false),
+  upscaled: z.boolean().default(false),
+  bgRemoved: z.boolean().default(false),
 });
 type TInputs = z.infer<typeof schema>;
 
@@ -463,12 +463,12 @@ const Home: NextPageWithLayout = () => {
                   panelContent={
                     <Fragment>
                       <fieldset className="grid w-full gap-2.5">
-                        <label htmlFor="restore" className="sr-only">
+                        <label htmlFor="restored" className="sr-only">
                           Restore photo
                         </label>
                         <ToggleInput
                           control={control}
-                          name="restore"
+                          name="restored"
                           label="Restore photo"
                           description="Old and blurry face photo restoration"
                           disabled={
@@ -476,19 +476,19 @@ const Home: NextPageWithLayout = () => {
                             session.status === "unauthenticated"
                           }
                         />
-                        {formState.errors.restore ? (
+                        {formState.errors.restored ? (
                           <p className="-mt-1 text-sm font-medium text-red-500">
-                            {formState.errors.restore.message}
+                            {formState.errors.restored.message}
                           </p>
                         ) : null}
                       </fieldset>
                       <fieldset className="grid w-full gap-2.5">
-                        <label htmlFor="upscale" className="sr-only">
+                        <label htmlFor="upscaled" className="sr-only">
                           Upscale photo
                         </label>
                         <ToggleInput
                           control={control}
-                          name="upscale"
+                          name="upscaled"
                           label="Upscale photo"
                           description="Low resolution face photo upscaling"
                           disabled={
@@ -496,19 +496,19 @@ const Home: NextPageWithLayout = () => {
                             session.status === "unauthenticated"
                           }
                         />
-                        {formState.errors.upscale ? (
+                        {formState.errors.upscaled ? (
                           <p className="-mt-1 text-sm font-medium text-red-500">
-                            {formState.errors.upscale.message}
+                            {formState.errors.upscaled.message}
                           </p>
                         ) : null}
                       </fieldset>
                       <fieldset className="grid w-full gap-2.5">
-                        <label htmlFor="upscale" className="sr-only">
+                        <label htmlFor="bgRemoved" className="sr-only">
                           Remove background
                         </label>
                         <ToggleInput
                           control={control}
-                          name="removeBg"
+                          name="bgRemoved"
                           label="Remove background"
                           description="Face photo background removal"
                           disabled={
@@ -516,9 +516,9 @@ const Home: NextPageWithLayout = () => {
                             session.status === "unauthenticated"
                           }
                         />
-                        {formState.errors.removeBg ? (
+                        {formState.errors.bgRemoved ? (
                           <p className="-mt-1 text-sm font-medium text-red-500">
-                            {formState.errors.removeBg.message}
+                            {formState.errors.bgRemoved.message}
                           </p>
                         ) : null}
                       </fieldset>

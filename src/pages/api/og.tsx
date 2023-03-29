@@ -35,17 +35,15 @@ export default function handler(req: NextRequest) {
               width="164"
               height="164"
               viewBox="0 0 24 24"
-              stroke="white"
               fill="none"
+              stroke="white"
               stroke-width="1"
               stroke-linecap="round"
               stroke-linejoin="round"
-              className="icon icon-tabler icon-tabler-pokeball"
             >
-              <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-              <circle cx="9" cy="9" r="9" transform="translate(3 3)" />
-              <circle cx="12" cy="12" r="3" />
-              <path d="M3 12h6m6 0h6" />
+              <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+              <circle cx="9" cy="9" r="2"></circle>
+              <path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"></path>
             </svg>
           </div>
           <div tw="flex max-w-4xl items-center justify-center flex-col mt-10">
