@@ -1,32 +1,26 @@
 import { env } from "@/env.mjs";
-import type {
-  ACCESSORY,
-  COSMETICS,
-  FACIAL_HAIR,
-  HAIR_COLOR,
-  ResponseBody,
-  ResponseData,
-  ResponseResult,
-} from "@/types/globals";
 import {
-  GENDER,
+  HAIR_COLOR,
   HAIR_STYLE,
-  SKIN_TONE,
-  type EXPRESSION,
+  SMILE,
+  type COSMETICS,
+  type ResponseBody,
+  type ResponseData,
+  type ResponseResult,
 } from "@/types/globals";
+import { hexToHairColor } from "@/utils/format";
 import type { NextApiRequest, NextApiResponse } from "next";
 
 interface ExtendedNextApiRequest extends NextApiRequest {
   body: {
     image: string;
-    skinTone: SKIN_TONE;
     hairStyle: HAIR_STYLE;
-    facialHair: FACIAL_HAIR;
-    facialHairColor: HAIR_COLOR;
-    expression: EXPRESSION;
-    gender: GENDER;
-    accessory: ACCESSORY[];
+    hairColor: HAIR_COLOR;
+    smile: SMILE;
     cosmetics: COSMETICS[];
+    restored: boolean;
+    upscaled: boolean;
+    bgRemoved: boolean;
   };
 }
 
@@ -37,19 +31,38 @@ export default async function handler(
   res: NextApiResponse<ResponseData | string>
 ) {
   try {
-    const { image, skinTone, hairStyle, expression, gender } = req.body;
+    const {
+      image,
+      hairStyle,
+      hairColor,
+      smile,
+      cosmetics,
+      restored,
+      upscaled,
+      bgRemoved,
+    } = req.body;
 
     const prompt = `a ${
-      gender === GENDER.NEUTRAL
-        ? "face with"
-        : `${gender.toLowerCase()} face with`
-    }  ${
-      skinTone === SKIN_TONE.DEFAULT ? "" : `${skinTone.toLowerCase()} skin,`
-    }  ${
-      hairStyle === HAIR_STYLE.DEFAULT
+      smile === SMILE.NO_SMILE ? "face with" : "smiling face with"
+    } ${
+      hairStyle === HAIR_STYLE.DEFAULT ? "" : `a ${hairStyle.toLowerCase()}`
+    } ${
+      hairColor === HAIR_COLOR.DEFAULT
         ? ""
-        : `${hairStyle.toLowerCase()} hair, and`
-    } ${`${expression.toLowerCase()} expression`}`;
+        : `${hexToHairColor(hairColor).toLowerCase()} hair,`
+    } ${
+      cosmetics.length === 0
+        ? ""
+        : `wearing ${cosmetics
+            .map((c) => c.toLowerCase())
+            .join(", ")} cosmetics, and with`
+    } ${
+      smile === SMILE.NO_SMILE
+        ? ""
+        : smile === SMILE.SMALL_SMILE
+        ? "a little smile"
+        : "a big smile"
+    }`;
 
     const sanitizedPrompt = prompt.replaceAll(/\s+/g, " ").trim();
 
@@ -64,7 +77,7 @@ export default async function handler(
         "7af9a66f36f97fee2fece7dcc927551a951f0022cbdd23747b9212f23fc17021",
       input: {
         input: image,
-        neutral: "a face",
+        neutral: "a face with hair",
         target: sanitizedPrompt,
         manipulation_strength: 4.1,
         disentanglement_threshold: 0.15,
@@ -120,8 +133,44 @@ export default async function handler(
           }
         : "Generation failed"
     );
+
+    // // Check if the user is authenticated
+    // const session = await getServerAuthSession({ req, res });
+    // if (!session || !session.user) {
+    //   return res.status(401).json("Unauthorized");
+    // }
+
+    // const user = await prisma.user.findUnique({
+    //   where: {
+    //     id: session.user.id,
+    //   },
+    // });
+
+    // console.log(user);
+
+    // // Save photo to database
+    // if (user && generatedOutput) {
+    //   await prisma.photo.create({
+    //     data: {
+    //       user: {
+    //         connect: {
+    //           id: user.id,
+    //         },
+    //       },
+    //       replicateId: generationId,
+    //       inputImage: originalInput,
+    //       outputImage: generatedOutput,
+    //       prompt: sanitizedPrompt,
+    //       restored,
+    //       upscaled,
+    //       bgRemoved,
+    //     },
+    //   });
+    // } else {
+    //   return res.status(500).json("Failed to generate image");
+    // }
   } catch (error) {
     console.error(error);
-    res.status(500).json("Failed to generate pokemon");
+    res.status(500).json("Failed to generate image");
   }
 }

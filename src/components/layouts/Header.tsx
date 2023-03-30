@@ -1,7 +1,8 @@
 import { Icons } from "@/components/Icons";
+import Button from "@/components/ui/Button";
 import { Menu, Transition } from "@headlessui/react";
 import { LayoutDashboard, LogOut, User } from "lucide-react";
-import { useSession } from "next-auth/react";
+import { signIn, useSession } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
 import { Fragment, useEffect, useState } from "react";
@@ -46,16 +47,15 @@ const Header = () => {
         </Link>
         {session.status === "loading" ||
         session.status === "unauthenticated" ? (
-          <Link
+          <Button
             aria-label="sign in"
-            href="api/auth/signin"
-            className={twMerge(
-              "grid h-10 place-items-center rounded-md bg-blue-600 px-5 py-1.5 text-base transition-colors hover:bg-blue-700 active:scale-95 sm:text-base",
-              "focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2 focus:ring-offset-gray-900"
-            )}
+            className="h-auto w-fit py-1.5"
+            onClick={() => void signIn("google")}
+            isLoading={session.status === "loading"}
+            disabled={session.status === "loading"}
           >
             Sign up
-          </Link>
+          </Button>
         ) : (
           <Menu as="div" className="relative inline-block text-left">
             <div>

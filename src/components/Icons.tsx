@@ -1,5 +1,4 @@
-import type { Icon as LucideIcon, LucideProps } from "lucide-react";
-import { Image } from "lucide-react";
+import { Image, type Icon as LucideIcon, type LucideProps } from "lucide-react";
 
 export type Icon = LucideIcon;
 

@@ -1,4 +1,3 @@
-import { hextToColor } from "@/utils/format";
 import { Popover, Transition } from "@headlessui/react";
 import { ChevronUp } from "lucide-react";
 import dynamic from "next/dynamic";
@@ -15,12 +14,14 @@ type ColorPickerProps<TFieldValues extends FieldValues, TContext = unknown> = {
   control: Control<TFieldValues, TContext>;
   name: Path<TFieldValues>;
   options: PathValue<TFieldValues, Path<TFieldValues>>[];
+  formatHex?: (hex: string) => string;
 };
 
 const ColorPicker = <TFieldValues extends FieldValues>({
   control,
   name,
   options,
+  formatHex,
 }: ColorPickerProps<TFieldValues>) => {
   const [color, setColor] = useState(options[0] ?? "#000000");
 
@@ -41,7 +42,9 @@ const ColorPicker = <TFieldValues extends FieldValues>({
                 className="block h-3.5 w-3.5 rounded-sm ring-1 ring-gray-200"
                 style={{ backgroundColor: color }}
               />
-              <span className="block truncate">{hextToColor(color)}</span>
+              <span className="block truncate capitalize">
+                {formatHex ? formatHex(color) : color}
+              </span>
             </span>
             <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
               <ChevronUp

@@ -16,27 +16,28 @@ export enum HAIR_STYLE {
   MEDIUM = "Medium",
   LONG = "Long",
   BALD = "Bald",
+  BOWL_CUT = "Bowl cut",
+  BOB_CUT = "Bob cut",
+  WOLF_CUT = "Wolf cut",
+  FRINGE = "Fringe",
+  HI_TOP_FADE = "HI-top fade",
   CURLY = "Curly",
-  WAVEY = "Wavey",
-  STRAIGHT = "Straight",
-  PONYTAIL = "Ponytail",
 }
 
 export enum HAIR_COLOR {
   DEFAULT = "Default",
   BLACK = "#000000",
   BROWN = "#8b4513",
-  GOLDEN = "#daa520",
-  YELLOW = "#ffff00",
+  BRUNETTE = "#5c3317",
   BLONDE = "#f0e68c",
   RED = "#ff0000",
-  GREEN = "#008000",
-  BLUE = "#0000ff",
-  GREY = "#808080",
-  WHITE = "#ffffff",
   GINGER = "#ff4500",
-  PINK = "#ffc0cb",
-  PURPLE = "#800080",
+}
+
+export enum SMILE {
+  NO_SMILE = "No smile",
+  SMALL_SMILE = "Small smile",
+  BIG_SMILE = "Big smile",
 }
 
 export enum FACIAL_HAIR {
@@ -48,12 +49,11 @@ export enum FACIAL_HAIR {
 
 export enum EYE_COLOR {
   DEFAULT = "Default",
-  BLACK = "Black",
-  BLUE = "Blue",
-  BROWN = "Brown",
-  GREEN = "Green",
-  HAZEL = "Hazel",
-  GRAY = "Gray",
+  BLACK = "#000000",
+  BROWN = "#8b4513",
+  BLUE = "#0000ff",
+  GREEN = "#008000",
+  GRAY = "#808080",
 }
 
 export enum GENDER {
@@ -67,17 +67,14 @@ export enum AGE {
   CHILD = "Child",
   TEEN = "Teen",
   ADULT = "Adult",
-  SENIOR = "Senior",
 }
 
 export enum EXPRESSION {
+  DEFAULT = "Default",
   HAPPY = "Happy",
   SAD = "Sad",
   ANGRY = "Angry",
   SURPRISED = "Surprised",
-  DISGUSTED = "Disgusted",
-  FEARFUL = "Fearful",
-  CALM = "Calm",
 }
 
 export enum ACCESSORY {
@@ -90,15 +87,10 @@ export enum ACCESSORY {
 
 export enum COSMETICS {
   LIPSTICK = "Lipstick",
-  BLUSH = "Blush",
-  EYEBROW = "Eyebrow",
   EYELINER = "Eyeliner",
   EYESHADOW = "Eyeshadow",
-  MASCARA = "Mascara",
   NOSE_RING = "Nose Ring",
-  NECKLACE = "Necklace",
   EARRINGS = "Earrings",
-  TATTOO = "Tattoo",
 }
 
 // form file field

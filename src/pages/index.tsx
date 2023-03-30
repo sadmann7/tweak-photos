@@ -9,22 +9,17 @@ import FileInput from "@/components/ui/FileInput";
 import Toggle from "@/components/ui/Toggle";
 import ToggleInput from "@/components/ui/ToggleInput";
 import type { NextPageWithLayout } from "@/pages/_app";
-import type {
-  OriginalImage,
-  ResponseData,
-  UploadedFile,
-} from "@/types/globals";
 import {
-  ACCESSORY,
   COSMETICS,
-  EXPRESSION,
-  FACIAL_HAIR,
-  GENDER,
   HAIR_COLOR,
   HAIR_STYLE,
-  SKIN_TONE,
+  SMILE,
+  type OriginalImage,
+  type ResponseData,
+  type UploadedFile,
 } from "@/types/globals";
 import { downloadFile } from "@/utils/download";
+import { hexToHairColor } from "@/utils/format";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { AlertTriangle, Download, Loader2, Tv2, Upload } from "lucide-react";
 import { useSession } from "next-auth/react";
@@ -39,14 +34,9 @@ const schema = z.object({
   image: z.unknown().refine((v) => v instanceof File, {
     message: "Upload an image",
   }),
-  skinTone: z.nativeEnum(SKIN_TONE).default(SKIN_TONE.DEFAULT),
   hairStyle: z.nativeEnum(HAIR_STYLE).default(HAIR_STYLE.DEFAULT),
   hairColor: z.nativeEnum(HAIR_COLOR).default(HAIR_COLOR.DEFAULT),
-  facialHair: z.nativeEnum(FACIAL_HAIR).default(FACIAL_HAIR.DEFAULT),
-  facialHairColor: z.nativeEnum(HAIR_COLOR).default(HAIR_COLOR.DEFAULT),
-  expression: z.nativeEnum(EXPRESSION).default(EXPRESSION.HAPPY),
-  gender: z.nativeEnum(GENDER).default(GENDER.NEUTRAL),
-  accessory: z.array(z.nativeEnum(ACCESSORY)).default([]),
+  smile: z.nativeEnum(SMILE).default(SMILE.NO_SMILE),
   cosmetics: z.array(z.nativeEnum(COSMETICS)).default([]),
   restored: z.boolean().default(false),
   upscaled: z.boolean().default(false),
@@ -74,8 +64,8 @@ const Home: NextPageWithLayout = () => {
   const onSubmit: SubmitHandler<TInputs> = async (data) => {
     console.log(data);
     await new Promise((resolve) => setTimeout(resolve, 200));
-    // if (!(data.image instanceof File)) return;
-    // await generateImage(data);
+    if (!(data.image instanceof File)) return;
+    await generateImage(data);
   };
 
   // generate image
@@ -191,7 +181,7 @@ const Home: NextPageWithLayout = () => {
           {isLoading ? (
             <div className="grid w-full place-items-center">
               <h2 className="text-lg font-medium text-gray-50 sm:text-xl">
-                Generating pokemon...
+                Generating image...
               </h2>
               <p className="mt-2 text-sm text-gray-400 sm:text-base">
                 This usually takes around 30 to 40 seconds
@@ -233,7 +223,7 @@ const Home: NextPageWithLayout = () => {
                 <CompareSlider
                   itemOneName={originalImage.name ?? "original"}
                   itemOneUrl={originalImage.url}
-                  itemTwoName="Generated pokemon"
+                  itemTwoName="Generated"
                   itemTwoUrl={generatedImage}
                   className="aspect-square max-h-[480px] rounded-xl"
                 />
@@ -254,11 +244,11 @@ const Home: NextPageWithLayout = () => {
                   </div>
                   <div className="grid w-full place-items-center gap-2 sm:w-1/2">
                     <h2 className="text-base font-medium text-gray-50 sm:text-lg">
-                      Generated pokemon
+                      Generated image
                     </h2>
                     <Image
                       src={generatedImage}
-                      alt={"Generated pokemon"}
+                      alt={"Generated"}
                       width={480}
                       height={480}
                       className="rounded-xl"
@@ -269,7 +259,7 @@ const Home: NextPageWithLayout = () => {
               )}
               <div className="flex w-full max-w-sm flex-col items-center justify-center gap-4 sm:flex-row">
                 <Button
-                  aria-label="Generate another pokemon"
+                  aria-label="Generate another image"
                   className="w-full gap-2 text-sm sm:text-base"
                   onClick={() => {
                     setOriginalImage(null);
@@ -283,13 +273,13 @@ const Home: NextPageWithLayout = () => {
                   <span className="whitespace-nowrap">Generate again</span>
                 </Button>
                 <Button
-                  aria-label="Download generated pokemon"
+                  aria-label="Download generated image"
                   variant="secondary"
                   className="w-full gap-2 text-sm sm:text-base"
                   onClick={() => {
                     downloadFile(
                       generatedImage,
-                      "generated-pokemon.png",
+                      "generated-image.png",
                       setIsDownloading
                     );
                   }}
@@ -302,152 +292,92 @@ const Home: NextPageWithLayout = () => {
                   ) : (
                     <Download className="h-4 w-4" aria-hidden="true" />
                   )}
-                  <span className="whitespace-nowrap">Download pokemon</span>
+                  <span className="whitespace-nowrap">Download image</span>
                 </Button>
               </div>
             </div>
           ) : (
             <form
-              aria-label="Generate pokemon form"
+              aria-label="Generate image form"
               className="grid w-full max-w-lg place-items-center gap-6"
               onSubmit={(...args) => void handleSubmit(onSubmit)(...args)}
             >
               <fieldset className="grid w-full gap-2.5">
                 <label
-                  htmlFor="skinTone"
+                  htmlFor="hairStyle"
                   className="text-sm font-medium text-gray-50 sm:text-base"
                 >
-                  Choose skin tone
+                  Choose hair style
                 </label>
                 <DropdownSelect
                   control={control}
-                  name="skinTone"
-                  options={Object.values(SKIN_TONE)}
+                  name="hairStyle"
+                  options={Object.values(HAIR_STYLE)}
                 />
-                {formState.errors.skinTone ? (
+                {formState.errors.hairStyle ? (
                   <p className="-mt-1 text-sm font-medium text-red-500">
-                    {formState.errors.skinTone.message}
-                  </p>
-                ) : null}
-              </fieldset>
-              <div className="flex w-full flex-col gap-5 sm:flex-row sm:items-start sm:justify-between">
-                <fieldset className="grid w-full gap-2.5">
-                  <label
-                    htmlFor="hairStyle"
-                    className="text-sm font-medium text-gray-50 sm:text-base"
-                  >
-                    Choose hair style
-                  </label>
-                  <DropdownSelect
-                    control={control}
-                    name="hairStyle"
-                    options={Object.values(HAIR_STYLE)}
-                  />
-                  {formState.errors.hairStyle ? (
-                    <p className="-mt-1 text-sm font-medium text-red-500">
-                      {formState.errors.hairStyle.message}
-                    </p>
-                  ) : null}
-                </fieldset>
-                <fieldset className="grid w-full gap-2.5">
-                  <label
-                    htmlFor="hairColor"
-                    className="text-sm font-medium text-gray-50 sm:text-base"
-                  >
-                    Choose hair color
-                  </label>
-                  <ColorPicker
-                    control={control}
-                    name="hairColor"
-                    options={Object.values(HAIR_COLOR)}
-                  />
-                  {formState.errors.hairColor ? (
-                    <p className="-mt-1 text-sm font-medium text-red-500">
-                      {formState.errors.hairColor.message}
-                    </p>
-                  ) : null}
-                </fieldset>
-              </div>
-              <fieldset className="grid w-full gap-2.5">
-                <label
-                  htmlFor="expression"
-                  className="text-sm font-medium text-gray-50 sm:text-base"
-                >
-                  Choose expression
-                </label>
-                <DropdownSelect
-                  control={control}
-                  name="expression"
-                  options={Object.values(EXPRESSION)}
-                />
-                {formState.errors.expression ? (
-                  <p className="-mt-1 text-sm font-medium text-red-500">
-                    {formState.errors.expression.message}
+                    {formState.errors.hairStyle.message}
                   </p>
                 ) : null}
               </fieldset>
               <fieldset className="grid w-full gap-2.5">
                 <label
-                  htmlFor="gender"
+                  htmlFor="hairColor"
                   className="text-sm font-medium text-gray-50 sm:text-base"
                 >
-                  Choose gender
+                  Choose hair color
                 </label>
-                <DropdownSelect
+                <ColorPicker
                   control={control}
-                  name="gender"
-                  options={Object.values(GENDER)}
+                  name="hairColor"
+                  options={Object.values(HAIR_COLOR)}
+                  formatHex={hexToHairColor}
                 />
-                {formState.errors.gender ? (
+                {formState.errors.hairColor ? (
                   <p className="-mt-1 text-sm font-medium text-red-500">
-                    {formState.errors.gender.message}
+                    {formState.errors.hairColor.message}
                   </p>
                 ) : null}
               </fieldset>
-              <div className="flex w-full flex-col gap-5 sm:flex-row sm:items-start sm:justify-between">
-                <fieldset className="grid w-full gap-2.5">
-                  <label
-                    htmlFor="accessory"
-                    className="text-sm font-medium text-gray-50 sm:text-base"
-                  >
-                    Choose accessories{" "}
-                    <span className="text-gray-400">(max 3)</span>
-                  </label>
-                  <DropdownSelect
-                    control={control}
-                    name="accessory"
-                    options={Object.values(ACCESSORY)}
-                    isMultiple={true}
-                    maxSelected={3}
-                  />
-                  {formState.errors.accessory ? (
-                    <p className="-mt-1 text-sm font-medium text-red-500">
-                      {formState.errors.accessory.message}
-                    </p>
-                  ) : null}
-                </fieldset>
-                <fieldset className="grid w-full gap-2.5">
-                  <label
-                    htmlFor="cosmetic"
-                    className="text-sm font-medium text-gray-50 sm:text-base"
-                  >
-                    Choose cosmetics{" "}
-                    <span className="text-gray-400">(max 3)</span>
-                  </label>
-                  <DropdownSelect
-                    control={control}
-                    name="cosmetics"
-                    options={Object.values(COSMETICS)}
-                    isMultiple={true}
-                    maxSelected={3}
-                  />
-                  {formState.errors.cosmetics ? (
-                    <p className="-mt-1 text-sm font-medium text-red-500">
-                      {formState.errors.cosmetics.message}
-                    </p>
-                  ) : null}
-                </fieldset>
-              </div>
+              <fieldset className="grid w-full gap-2.5">
+                <label
+                  htmlFor="smile"
+                  className="text-sm font-medium text-gray-50 sm:text-base"
+                >
+                  Choose smile
+                </label>
+                <DropdownSelect
+                  control={control}
+                  name="smile"
+                  options={Object.values(SMILE)}
+                />
+                {formState.errors.smile ? (
+                  <p className="-mt-1 text-sm font-medium text-red-500">
+                    {formState.errors.smile.message}
+                  </p>
+                ) : null}
+              </fieldset>
+              <fieldset className="grid w-full gap-2.5">
+                <label
+                  htmlFor="cosmetic"
+                  className="text-sm font-medium text-gray-50 sm:text-base"
+                >
+                  Choose cosmetics{" "}
+                  <span className="text-gray-400">(max 3)</span>
+                </label>
+                <DropdownSelect
+                  control={control}
+                  name="cosmetics"
+                  options={Object.values(COSMETICS)}
+                  isMultiple={true}
+                  maxSelected={3}
+                />
+                {formState.errors.cosmetics ? (
+                  <p className="-mt-1 text-sm font-medium text-red-500">
+                    {formState.errors.cosmetics.message}
+                  </p>
+                ) : null}
+              </fieldset>
               <fieldset className="grid w-full gap-2.5">
                 <label
                   htmlFor="advancedFeatures"
