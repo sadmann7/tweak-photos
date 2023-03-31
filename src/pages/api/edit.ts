@@ -1,4 +1,6 @@
 import { env } from "@/env.mjs";
+import { getServerAuthSession } from "@/server/auth";
+import { prisma } from "@/server/db";
 import {
   HAIR_COLOR,
   HAIR_STYLE,
@@ -151,51 +153,45 @@ export default async function handler(
       }
     }
 
-    res.status(200).json(
-      generatedOutput
-        ? {
-            id: generationId,
-            input: originalInput,
-            output: generatedOutput,
-          }
-        : "Generation failed"
-    );
+    if (!generatedOutput) {
+      return res.status(500).json("Failed to generate image");
+    }
 
-    // // Check if the user is authenticated
-    // const session = await getServerAuthSession({ req, res });
-    // if (!session || !session.user) {
-    //   return res.status(401).json("Unauthorized");
-    // }
+    // Check if the user is authenticated
+    const session = await getServerAuthSession({ req, res });
+    if (session && session.user) {
+      const user = await prisma.user.findUnique({
+        where: {
+          id: session.user.id,
+        },
+      });
+      if (user) {
+        console.log(user);
+        // Save photo to the database
+        await prisma.photo.create({
+          data: {
+            user: {
+              connect: {
+                id: user.id,
+              },
+            },
+            replicateId: generationId,
+            inputImage: originalInput,
+            outputImage: generatedOutput,
+            prompt: sanitizedPrompt,
+            restored,
+            upscaled,
+            bgRemoved,
+          },
+        });
+      }
+    }
 
-    // const user = await prisma.user.findUnique({
-    //   where: {
-    //     id: session.user.id,
-    //   },
-    // });
-
-    // console.log(user);
-
-    // // Save photo to database
-    // if (user && generatedOutput) {
-    //   await prisma.photo.create({
-    //     data: {
-    //       user: {
-    //         connect: {
-    //           id: user.id,
-    //         },
-    //       },
-    //       replicateId: generationId,
-    //       inputImage: originalInput,
-    //       outputImage: generatedOutput,
-    //       prompt: sanitizedPrompt,
-    //       restored,
-    //       upscaled,
-    //       bgRemoved,
-    //     },
-    //   });
-    // } else {
-    //   return res.status(500).json("Failed to generate image");
-    // }
+    res.status(200).json({
+      id: generationId,
+      input: originalInput,
+      output: generatedOutput,
+    });
   } catch (error) {
     console.error(error);
     res.status(500).json("Failed to generate image");

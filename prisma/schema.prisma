@@ -68,7 +68,7 @@ enum USER_ROLE {
 
 model Photo {
     id          String   @id @default(cuid())
-    replicateId String
+    replicateId String   @unique
     inputImage  String
     outputImage String
     prompt      String
@@ -79,6 +79,4 @@ model Photo {
     userId      String
     createdAt   DateTime @default(now())
     updatedAt   DateTime @updatedAt
-
-    @@unique([replicateId, userId])
 }

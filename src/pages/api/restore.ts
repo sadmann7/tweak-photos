@@ -1,4 +1,6 @@
 import { env } from "@/env.mjs";
+import { getServerAuthSession } from "@/server/auth";
+import { prisma } from "@/server/db";
 import type {
   CodeFormerBody,
   ResponseData,
@@ -8,6 +10,7 @@ import type { NextApiRequest, NextApiResponse } from "next";
 
 interface ExtendedNextApiRequest extends NextApiRequest {
   body: {
+    replicateId: string;
     image: string;
   };
 }
@@ -19,7 +22,7 @@ export default async function handler(
   res: NextApiResponse<ResponseData | string>
 ) {
   try {
-    const { image } = req.body;
+    const { replicateId, image } = req.body;
 
     // POST request to Replicate to start the image restoration generation process
     const responseBody: CodeFormerBody = {
@@ -74,15 +77,47 @@ export default async function handler(
       }
     }
 
-    res.status(200).json(
-      generatedOutput
-        ? {
-            id: generationId,
-            input: originalInput,
-            output: generatedOutput,
-          }
-        : "Generation failed"
-    );
+    if (!generatedOutput) {
+      return res.status(500).json("Failed to generate image");
+    }
+
+    const session = await getServerAuthSession({ req, res });
+    if (session && session.user) {
+      const user = await prisma.user.findUnique({
+        where: {
+          id: session.user.id,
+        },
+      });
+      if (user) {
+        console.log(user);
+        // Find photo by replicateId on the database
+        const photo = await prisma.photo.findUnique({
+          where: {
+            replicateId,
+          },
+        });
+
+        if (!photo) {
+          throw new Error("Photo not found");
+        }
+
+        // Update photo with new output
+        await prisma.photo.update({
+          where: {
+            id: photo.replicateId,
+          },
+          data: {
+            outputImage: generatedOutput,
+          },
+        });
+      }
+    }
+
+    res.status(200).json({
+      id: generationId,
+      input: originalInput,
+      output: generatedOutput,
+    });
   } catch (error) {
     console.error(error);
     res.status(500).json("Failed to generate image");

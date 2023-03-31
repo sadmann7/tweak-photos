@@ -125,26 +125,34 @@ const Home: NextPageWithLayout = () => {
         });
 
         const editResponse2 = (await editResponse.json()) as ResponseData;
+        console.log(editResponse2);
         if (editResponse.status !== 200) {
-          editResponse2 instanceof Object
+          editResponse2 instanceof Error
+            ? setError(editResponse2.message)
+            : editResponse2 instanceof Object
             ? setError(editResponse2.output)
             : setError(editResponse2);
           setIsLoading(false);
         } else {
+          // restore image
           if (watch("restored")) {
+            await new Promise((resolve) => setTimeout(resolve, 200));
             const restoreResponse = await fetch("/api/restore", {
               method: "POST",
               headers: {
                 "Content-Type": "application/json",
               },
               body: JSON.stringify({
+                replicateId: editResponse2.output,
                 image: editResponse2.output,
               }),
             });
             const restoreResponse2 =
               (await restoreResponse.json()) as ResponseData;
             if (restoreResponse.status !== 200) {
-              restoreResponse2 instanceof Object
+              restoreResponse2 instanceof Error
+                ? setError(restoreResponse2.message)
+                : restoreResponse2 instanceof Object
                 ? setError(restoreResponse2.output)
                 : setError(restoreResponse2);
               setIsLoading(false);
@@ -171,8 +179,6 @@ const Home: NextPageWithLayout = () => {
     generatedImage,
     isLoading,
   });
-
-  console.log(watch("restored"));
 
   return (
     <>
@@ -223,15 +229,17 @@ const Home: NextPageWithLayout = () => {
               </p>
             </div>
           ) : error ? (
-            <div role="alert" className="grid w-full place-items-center gap-5">
+            <div role="alert" className="grid w-full place-items-center gap-4">
               <AlertTriangle
-                className="h-24 w-24 animate-pulse text-red-500"
+                className="h-28 w-28 animate-pulse text-red-500"
                 aria-hidden="true"
               />
-              <h2 className="text-lg font-medium text-gray-50 sm:text-xl">
-                Something went wrong
-              </h2>
-              <p className="text-sm text-gray-400 sm:text-base">{error}</p>
+              <div className="grid w-full place-items-center gap-1.5">
+                <h2 className="text-lg font-medium text-gray-50 sm:text-xl">
+                  Something went wrong
+                </h2>
+                <p className="text-sm text-gray-400 sm:text-base">{error}</p>
+              </div>
               <Button
                 aria-label="Try again"
                 className="w-fit"
