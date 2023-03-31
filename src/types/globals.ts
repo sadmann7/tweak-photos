@@ -114,7 +114,7 @@ export type UploadedFile = {
 };
 
 // replicate
-export type ResponseBody = {
+export type StyleClipBody = {
   version: string;
   input: {
     input: string;
@@ -122,6 +122,17 @@ export type ResponseBody = {
     target: string;
     manipulation_strength: number;
     disentanglement_threshold: number;
+  };
+};
+
+export type CodeFormerBody = {
+  version: string;
+  input: {
+    image: string;
+    codeformer_fidelity: number;
+    background_enhance: boolean;
+    face_upsample: boolean;
+    upscale: number;
   };
 };
 

@@ -72,7 +72,7 @@ const Home: NextPageWithLayout = () => {
     console.log(data);
     await new Promise((resolve) => setTimeout(resolve, 200));
     if (!(data.image instanceof File)) return;
-    await generateImage(data);
+    // await generateImage(data);
   };
 
   // generate image

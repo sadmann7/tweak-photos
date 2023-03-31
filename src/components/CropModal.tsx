@@ -3,7 +3,7 @@ import type { SetState } from "@/types/globals";
 import { Dialog, Transition } from "@headlessui/react";
 import "cropperjs/dist/cropper.css";
 import { Crop, RotateCcw, X } from "lucide-react";
-import { Fragment, useRef } from "react";
+import { Fragment, useEffect, useRef } from "react";
 import Cropper, { type ReactCropperElement } from "react-cropper";
 
 type CropModalProps = {
@@ -20,6 +20,19 @@ const CropModal = ({
   setCropData,
 }: CropModalProps) => {
   const cropperRef = useRef<ReactCropperElement>(null);
+
+  // crop image on enter key press
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Enter") {
+        if (!selectedFile || !cropperRef.current) return;
+        setCropData(cropperRef.current?.cropper.getCroppedCanvas().toDataURL());
+        setIsOpen(false);
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [selectedFile, setCropData, setIsOpen]);
 
   return (
     <>
