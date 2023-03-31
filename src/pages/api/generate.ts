@@ -2,6 +2,7 @@ import { env } from "@/env.mjs";
 import {
   HAIR_COLOR,
   HAIR_STYLE,
+  PRESET,
   SMILE,
   type COSMETICS,
   type ResponseBody,
@@ -14,6 +15,7 @@ import type { NextApiRequest, NextApiResponse } from "next";
 interface ExtendedNextApiRequest extends NextApiRequest {
   body: {
     image: string;
+    preset: PRESET;
     hairStyle: HAIR_STYLE;
     hairColor: HAIR_COLOR;
     smile: SMILE;
@@ -33,6 +35,7 @@ export default async function handler(
   try {
     const {
       image,
+      preset,
       hairStyle,
       hairColor,
       smile,
@@ -41,6 +44,26 @@ export default async function handler(
       upscaled,
       bgRemoved,
     } = req.body;
+
+    const goodPrompt =
+      "a face wearing these cosmetics: lipstick, eyeliner, eyeshadow, smiling with a big smile and  black hair";
+
+    const presetPrompt =
+      preset === PRESET.NO_PRESET
+        ? ""
+        : preset === PRESET.MALE_CHILD
+        ? "a male face of a child boy with male hair style"
+        : preset === PRESET.FEMALE_CHILD
+        ? "a female face of a child girl with female hair style"
+        : preset === PRESET.MALE_TEEN
+        ? "a male face of a teen man with male hair style"
+        : preset === PRESET.FEMALE_TEEN
+        ? "a female face of a teen woman with female hair style"
+        : preset === PRESET.MALE_ADULT
+        ? "a male face of a adult man with male hair style"
+        : preset === PRESET.FEMALE_ADULT
+        ? "a female face of a adult woman with female hair style"
+        : "";
 
     const prompt = `a ${
       smile === SMILE.NO_SMILE ? "face with" : "smiling face with"
@@ -64,10 +87,11 @@ export default async function handler(
         : "a big smile"
     }`;
 
+    const sanitizedPresetPrompt = presetPrompt.replaceAll(/\s+/g, " ").trim();
     const sanitizedPrompt = prompt.replaceAll(/\s+/g, " ").trim();
 
     console.log({
-      prompt,
+      sanitizedPresetPrompt,
       sanitizedPrompt,
     });
 
@@ -78,7 +102,10 @@ export default async function handler(
       input: {
         input: image,
         neutral: "a face with hair",
-        target: sanitizedPrompt,
+        target:
+          sanitizedPresetPrompt.length > 0
+            ? sanitizedPresetPrompt
+            : sanitizedPrompt,
         manipulation_strength: 4.1,
         disentanglement_threshold: 0.15,
       },

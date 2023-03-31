@@ -59,8 +59,8 @@ const Toggle = React.forwardRef<
             <span
               aria-hidden="true"
               className={twMerge(
-                "pointer-events-none inline-block h-[1.125rem] w-[1.125rem] transform rounded-full bg-gray-100 shadow-lg ring-0 transition duration-200 ease-in-out",
-                enabled ? "translate-x-5" : "translate-x-0.5"
+                "pointer-events-none inline-block h-[1.1rem] w-[1.1rem] transform rounded-full bg-gray-100 shadow-lg ring-0 transition duration-200 ease-in-out",
+                enabled ? "translate-x-[1.34rem]" : "translate-x-0.5"
               )}
             />
           </Switch>

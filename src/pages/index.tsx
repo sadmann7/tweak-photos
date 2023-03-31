@@ -13,6 +13,7 @@ import {
   COSMETICS,
   HAIR_COLOR,
   HAIR_STYLE,
+  PRESET,
   SMILE,
   type OriginalImage,
   type ResponseData,
@@ -20,6 +21,7 @@ import {
 } from "@/types/globals";
 import { downloadFile } from "@/utils/download";
 import { hexToHairColor } from "@/utils/format";
+import { useAutoAnimate } from "@formkit/auto-animate/react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { AlertTriangle, Download, Loader2, Tv2, Upload } from "lucide-react";
 import { useSession } from "next-auth/react";
@@ -34,6 +36,7 @@ const schema = z.object({
   image: z.unknown().refine((v) => v instanceof File, {
     message: "Upload an image",
   }),
+  preset: z.nativeEnum(PRESET).default(PRESET.NO_PRESET),
   hairStyle: z.nativeEnum(HAIR_STYLE).default(HAIR_STYLE.DEFAULT),
   hairColor: z.nativeEnum(HAIR_COLOR).default(HAIR_COLOR.DEFAULT),
   smile: z.nativeEnum(SMILE).default(SMILE.NO_SMILE),
@@ -57,7 +60,7 @@ const Home: NextPageWithLayout = () => {
   const session = useSession();
 
   // react-hook-form
-  const { handleSubmit, formState, control, setValue, reset } =
+  const { handleSubmit, formState, watch, control, setValue, reset } =
     useForm<TInputs>({
       resolver: zodResolver(schema),
     });
@@ -132,6 +135,9 @@ const Home: NextPageWithLayout = () => {
       }
     };
   };
+
+  // auto animate
+  const [container] = useAutoAnimate();
 
   console.log({
     originalImage,
@@ -299,86 +305,112 @@ const Home: NextPageWithLayout = () => {
           ) : (
             <form
               aria-label="Generate image form"
-              className="grid w-full max-w-lg place-items-center gap-6"
+              className="grid w-full max-w-lg place-items-center"
               onSubmit={(...args) => void handleSubmit(onSubmit)(...args)}
             >
               <fieldset className="grid w-full gap-2.5">
                 <label
-                  htmlFor="hairStyle"
+                  htmlFor="preset"
                   className="text-sm font-medium text-gray-50 sm:text-base"
                 >
-                  Choose hair style
+                  Choose preset
                 </label>
                 <DropdownSelect
                   control={control}
-                  name="hairStyle"
-                  options={Object.values(HAIR_STYLE)}
+                  name="preset"
+                  options={Object.values(PRESET)}
                 />
-                {formState.errors.hairStyle ? (
+                {formState.errors.preset ? (
                   <p className="-mt-1 text-sm font-medium text-red-500">
-                    {formState.errors.hairStyle.message}
+                    {formState.errors.preset.message}
                   </p>
                 ) : null}
               </fieldset>
-              <fieldset className="grid w-full gap-2.5">
-                <label
-                  htmlFor="hairColor"
-                  className="text-sm font-medium text-gray-50 sm:text-base"
-                >
-                  Choose hair color
-                </label>
-                <ColorPicker
-                  control={control}
-                  name="hairColor"
-                  options={Object.values(HAIR_COLOR)}
-                  formatHex={hexToHairColor}
-                />
-                {formState.errors.hairColor ? (
-                  <p className="-mt-1 text-sm font-medium text-red-500">
-                    {formState.errors.hairColor.message}
-                  </p>
+              <div ref={container} className="w-full">
+                {watch("preset") === PRESET.NO_PRESET ? (
+                  <div className="mt-6 space-y-6">
+                    <div className="flex w-full flex-col gap-5 sm:flex-row sm:items-start sm:justify-between">
+                      <fieldset className="grid w-full gap-2.5">
+                        <label
+                          htmlFor="hairStyle"
+                          className="text-sm font-medium text-gray-50 sm:text-base"
+                        >
+                          Choose hair style
+                        </label>
+                        <DropdownSelect
+                          control={control}
+                          name="hairStyle"
+                          options={Object.values(HAIR_STYLE)}
+                        />
+                        {formState.errors.hairStyle ? (
+                          <p className="-mt-1 text-sm font-medium text-red-500">
+                            {formState.errors.hairStyle.message}
+                          </p>
+                        ) : null}
+                      </fieldset>
+                      <fieldset className="grid w-full gap-2.5">
+                        <label
+                          htmlFor="hairColor"
+                          className="text-sm font-medium text-gray-50 sm:text-base"
+                        >
+                          Choose hair color
+                        </label>
+                        <ColorPicker
+                          control={control}
+                          name="hairColor"
+                          options={Object.values(HAIR_COLOR)}
+                          formatHex={hexToHairColor}
+                        />
+                        {formState.errors.hairColor ? (
+                          <p className="-mt-1 text-sm font-medium text-red-500">
+                            {formState.errors.hairColor.message}
+                          </p>
+                        ) : null}
+                      </fieldset>
+                    </div>
+                    <fieldset className="grid w-full gap-2.5">
+                      <label
+                        htmlFor="smile"
+                        className="text-sm font-medium text-gray-50 sm:text-base"
+                      >
+                        Choose smile
+                      </label>
+                      <DropdownSelect
+                        control={control}
+                        name="smile"
+                        options={Object.values(SMILE)}
+                      />
+                      {formState.errors.smile ? (
+                        <p className="-mt-1 text-sm font-medium text-red-500">
+                          {formState.errors.smile.message}
+                        </p>
+                      ) : null}
+                    </fieldset>
+                    <fieldset className="grid w-full gap-2.5">
+                      <label
+                        htmlFor="cosmetic"
+                        className="text-sm font-medium text-gray-50 sm:text-base"
+                      >
+                        Choose cosmetics{" "}
+                        <span className="text-gray-400">(max 3)</span>
+                      </label>
+                      <DropdownSelect
+                        control={control}
+                        name="cosmetics"
+                        options={Object.values(COSMETICS)}
+                        isMultiple={true}
+                        maxSelected={3}
+                      />
+                      {formState.errors.cosmetics ? (
+                        <p className="-mt-1 text-sm font-medium text-red-500">
+                          {formState.errors.cosmetics.message}
+                        </p>
+                      ) : null}
+                    </fieldset>
+                  </div>
                 ) : null}
-              </fieldset>
-              <fieldset className="grid w-full gap-2.5">
-                <label
-                  htmlFor="smile"
-                  className="text-sm font-medium text-gray-50 sm:text-base"
-                >
-                  Choose smile
-                </label>
-                <DropdownSelect
-                  control={control}
-                  name="smile"
-                  options={Object.values(SMILE)}
-                />
-                {formState.errors.smile ? (
-                  <p className="-mt-1 text-sm font-medium text-red-500">
-                    {formState.errors.smile.message}
-                  </p>
-                ) : null}
-              </fieldset>
-              <fieldset className="grid w-full gap-2.5">
-                <label
-                  htmlFor="cosmetic"
-                  className="text-sm font-medium text-gray-50 sm:text-base"
-                >
-                  Choose cosmetics{" "}
-                  <span className="text-gray-400">(max 3)</span>
-                </label>
-                <DropdownSelect
-                  control={control}
-                  name="cosmetics"
-                  options={Object.values(COSMETICS)}
-                  isMultiple={true}
-                  maxSelected={3}
-                />
-                {formState.errors.cosmetics ? (
-                  <p className="-mt-1 text-sm font-medium text-red-500">
-                    {formState.errors.cosmetics.message}
-                  </p>
-                ) : null}
-              </fieldset>
-              <fieldset className="grid w-full gap-2.5">
+              </div>
+              <fieldset className="mt-6 grid w-full gap-2.5">
                 <label
                   htmlFor="advancedFeatures"
                   className="text-sm font-medium text-gray-50 sm:text-base"
@@ -456,7 +488,7 @@ const Home: NextPageWithLayout = () => {
                   }
                 />
               </fieldset>
-              <fieldset className="grid w-full gap-3">
+              <fieldset className="mt-6 grid w-full gap-3">
                 <label
                   htmlFor="image"
                   className="text-sm font-medium text-gray-50 sm:text-base"
@@ -479,7 +511,7 @@ const Home: NextPageWithLayout = () => {
               </fieldset>
               <Button
                 aria-label="Edit photo"
-                className="w-full"
+                className="mt-7 w-full"
                 isLoading={isLoading}
                 loadingVariant="dots"
                 disabled={isLoading}

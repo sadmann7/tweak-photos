@@ -3,11 +3,20 @@ import type { Dispatch, SetStateAction } from "react";
 export type SetState<T> = Dispatch<SetStateAction<T>>;
 
 // form enums
+export enum PRESET {
+  NO_PRESET = "No preset",
+  MALE_CHILD = "Male child",
+  FEMALE_CHILD = "Female child",
+  MALE_TEEN = "Male teen",
+  FEMALE_TEEN = "Female teen",
+  MALE_ADULT = "Male adult",
+  FEMALE_ADULT = "Female adult",
+}
+
 export enum SKIN_TONE {
   DEFAULT = "Default",
-  LIGHT = "Light",
-  MEDIUM = "Medium",
-  DARK = "Dark",
+  TANNED = "Tanned",
+  PALE = "Pale",
 }
 
 export enum HAIR_STYLE {
@@ -18,7 +27,6 @@ export enum HAIR_STYLE {
   BALD = "Bald",
   BOWL_CUT = "Bowl cut",
   BOB_CUT = "Bob cut",
-  WOLF_CUT = "Wolf cut",
   FRINGE = "Fringe",
   HI_TOP_FADE = "HI-top fade",
   CURLY = "Curly",

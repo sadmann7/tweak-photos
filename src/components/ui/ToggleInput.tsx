@@ -64,8 +64,8 @@ const ToggleInput = <TFieldValues extends FieldValues>({
               <span
                 aria-hidden="true"
                 className={twMerge(
-                  "inline-block h-[1.125rem] w-[1.125rem] rounded-full bg-gray-100 shadow ring-0 transition duration-200 ease-in-out",
-                  enabled ? "translate-x-5" : "translate-x-0.5"
+                  "inline-block h-[1.1rem] w-[1.1rem] rounded-full bg-gray-100 shadow ring-0 transition duration-200 ease-in-out",
+                  enabled ? "translate-x-[1.34rem]" : "translate-x-0.5"
                 )}
               />
             </Switch>
