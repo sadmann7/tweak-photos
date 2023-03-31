@@ -109,40 +109,40 @@ const Home: NextPageWithLayout = () => {
           url: uploadedFile.secureUrl,
         });
 
-        // // generate image from replicate
-        // setIsLoading(true);
-        // await new Promise((resolve) => setTimeout(resolve, 200));
-        // setIsLoading(true);
-        // const response2 = await fetch("/api/generate", {
-        //   method: "POST",
-        //   headers: {
-        //     "Content-Type": "application/json",
-        //   },
-        //   body: JSON.stringify({
-        //     ...data,
-        //     image: uploadedFile.secureUrl,
-        //   }),
-        // });
+        // generate image from replicate
+        setIsLoading(true);
+        await new Promise((resolve) => setTimeout(resolve, 200));
+        setIsLoading(true);
+        const response2 = await fetch("/api/generate", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            ...data,
+            image: uploadedFile.secureUrl,
+          }),
+        });
 
-        // const response3 = (await response2.json()) as ResponseData;
-        // if (response2.status !== 200) {
-        //   response3 instanceof Object
-        //     ? setError(response3.output)
-        //     : setError(response3);
-        //   setIsLoading(false);
-        // } else {
-        //   setGeneratedImage(response3.output);
+        const response3 = (await response2.json()) as ResponseData;
+        if (response2.status !== 200) {
+          response3 instanceof Object
+            ? setError(response3.output)
+            : setError(response3);
+          setIsLoading(false);
+        } else {
+          setGeneratedImage(response3.output);
 
-        //   setTimeout(() => {
-        //     setIsLoading(false);
-        //   }, 1300);
-        // }
+          setTimeout(() => {
+            setIsLoading(false);
+          }, 1300);
+        }
       }
     };
   };
 
   // auto animate
-  const [container] = useAutoAnimate();
+  const [notPresetRef] = useAutoAnimate();
 
   console.log({
     originalImage,
@@ -195,7 +195,7 @@ const Home: NextPageWithLayout = () => {
                 Generating image...
               </h2>
               <p className="mt-2 text-sm text-gray-400 sm:text-base">
-                This usually takes around 30 to 40 seconds
+                Sit back and relax, this usually takes 15-20 seconds
               </p>
             </div>
           ) : error ? (
@@ -212,10 +212,15 @@ const Home: NextPageWithLayout = () => {
                 aria-label="Try again"
                 className="w-fit"
                 onClick={() => {
-                  setError(null);
                   setOriginalImage(null);
                   setGeneratedImage(null);
                   setSelectedFile(null);
+                  setIsCropperOpen(false);
+                  setCropData(null);
+                  setIsLoading(false);
+                  setIsComparing(false);
+                  setError(null);
+                  setIsDownloading(false);
                   reset();
                 }}
               >
@@ -275,8 +280,13 @@ const Home: NextPageWithLayout = () => {
                   onClick={() => {
                     setOriginalImage(null);
                     setGeneratedImage(null);
-                    setError(null);
                     setSelectedFile(null);
+                    setIsCropperOpen(false);
+                    setCropData(null);
+                    setIsLoading(false);
+                    setIsComparing(false);
+                    setError(null);
+                    setIsDownloading(false);
                     reset();
                   }}
                 >
@@ -331,7 +341,7 @@ const Home: NextPageWithLayout = () => {
                   </p>
                 ) : null}
               </fieldset>
-              <div ref={container} className="w-full">
+              <div ref={notPresetRef} className="w-full">
                 {watch("preset") === PRESET.NO_PRESET ||
                 watch("preset") === undefined ? (
                   <div className="mt-6 space-y-6">

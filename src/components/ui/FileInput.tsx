@@ -172,10 +172,7 @@ const DragActive = ({ isDragActive }: { isDragActive: boolean }) => {
   return (
     <div className="grid place-items-center gap-2 text-gray-200 sm:px-10">
       <UploadCloud
-        className={twMerge(
-          "h-10 w-10 group-hover:animate-bounce",
-          isDragActive ? "animate-bounce" : ""
-        )}
+        className={twMerge("h-10 w-10", isDragActive ? "animate-bounce" : "")}
         aria-hidden="true"
       />
       <p className="text-base font-medium sm:text-lg">Drop the file here</p>

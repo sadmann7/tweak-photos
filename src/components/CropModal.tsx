@@ -102,7 +102,7 @@ const CropModal = ({
                           aria-label="crop image"
                           type="button"
                           variant="gray"
-                          className="flex h-auto w-fit items-center gap-2 active:scale-95"
+                          className="flex h-auto w-fit items-center gap-2 text-sm active:scale-95 sm:text-base"
                           onClick={() => {
                             if (!selectedFile || !cropperRef.current) return;
                             setCropData(
@@ -120,7 +120,7 @@ const CropModal = ({
                           aria-label="reset crop"
                           type="button"
                           variant="gray"
-                          className="flex h-auto w-fit items-center gap-2 active:scale-95"
+                          className="flex h-auto w-fit items-center gap-2 text-sm active:scale-95 sm:text-base"
                           onClick={() => {
                             cropperRef.current?.cropper.reset();
                             setCropData(null);
