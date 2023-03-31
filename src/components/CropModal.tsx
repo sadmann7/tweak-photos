@@ -27,7 +27,6 @@ const CropModal = ({
       if (event.key === "Enter") {
         if (!selectedFile || !cropperRef.current) return;
         setCropData(cropperRef.current?.cropper.getCroppedCanvas().toDataURL());
-        setIsOpen(false);
       }
     };
     window.addEventListener("keydown", handleKeyDown);

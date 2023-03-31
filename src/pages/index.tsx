@@ -72,7 +72,7 @@ const Home: NextPageWithLayout = () => {
     console.log(data);
     await new Promise((resolve) => setTimeout(resolve, 200));
     if (!(data.image instanceof File)) return;
-    // await generateImage(data);
+    await generateImage(data);
   };
 
   // generate image
@@ -87,7 +87,7 @@ const Home: NextPageWithLayout = () => {
     reader.onload = async () => {
       const base64 = reader.result;
       if (typeof base64 !== "string") return;
-      const response = await fetch("/api/upload", {
+      const uploadResponse = await fetch("/api/upload", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -97,12 +97,12 @@ const Home: NextPageWithLayout = () => {
         }),
       });
 
-      if (response.status !== 200) {
+      if (uploadResponse.status !== 200) {
         toast.error("Something went wrong");
         setIsLoading(false);
       } else {
         if (!(data.image instanceof File)) return;
-        const uploadedFile = (await response.json()) as UploadedFile;
+        const uploadedFile = (await uploadResponse.json()) as UploadedFile;
         if (!uploadedFile) return;
         setOriginalImage({
           name: data.image.name,
@@ -113,7 +113,7 @@ const Home: NextPageWithLayout = () => {
         setIsLoading(true);
         await new Promise((resolve) => setTimeout(resolve, 200));
         setIsLoading(true);
-        const response2 = await fetch("/api/generate", {
+        const editResponse = await fetch("/api/edit", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -124,14 +124,36 @@ const Home: NextPageWithLayout = () => {
           }),
         });
 
-        const response3 = (await response2.json()) as ResponseData;
-        if (response2.status !== 200) {
-          response3 instanceof Object
-            ? setError(response3.output)
-            : setError(response3);
+        const editResponse2 = (await editResponse.json()) as ResponseData;
+        if (editResponse.status !== 200) {
+          editResponse2 instanceof Object
+            ? setError(editResponse2.output)
+            : setError(editResponse2);
           setIsLoading(false);
         } else {
-          setGeneratedImage(response3.output);
+          if (watch("restored")) {
+            const restoreResponse = await fetch("/api/restore", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                image: editResponse2.output,
+              }),
+            });
+            const restoreResponse2 =
+              (await restoreResponse.json()) as ResponseData;
+            if (restoreResponse.status !== 200) {
+              restoreResponse2 instanceof Object
+                ? setError(restoreResponse2.output)
+                : setError(restoreResponse2);
+              setIsLoading(false);
+            } else {
+              setGeneratedImage(restoreResponse2.output);
+            }
+          } else {
+            setGeneratedImage(editResponse2.output);
+          }
 
           setTimeout(() => {
             setIsLoading(false);
@@ -149,6 +171,8 @@ const Home: NextPageWithLayout = () => {
     generatedImage,
     isLoading,
   });
+
+  console.log(watch("restored"));
 
   return (
     <>
