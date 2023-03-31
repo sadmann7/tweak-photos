@@ -125,7 +125,6 @@ const Home: NextPageWithLayout = () => {
         });
 
         const editResponse2 = (await editResponse.json()) as ResponseData;
-        console.log(editResponse2);
         if (editResponse.status !== 200) {
           editResponse2 instanceof Error
             ? setError(editResponse2.message)

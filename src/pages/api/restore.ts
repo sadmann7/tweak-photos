@@ -91,6 +91,7 @@ export default async function handler(
       if (user) {
         console.log(user);
         // Find photo by replicateId on the database
+        // TODO: fix photo not found error
         const photo = await prisma.photo.findUnique({
           where: {
             replicateId,
