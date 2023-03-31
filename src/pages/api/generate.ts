@@ -46,19 +46,19 @@ export default async function handler(
     } = req.body;
 
     const goodPrompt =
-      "a face wearing these cosmetics: lipstick, eyeliner, eyeshadow, smiling with a big smile and  black hair";
+      "a face wearing these cosmetics: lipstick, eyeliner, eyeshadow, smiling with a big smile and black hair";
 
     const presetPrompt =
       preset === PRESET.NO_PRESET
         ? ""
         : preset === PRESET.MALE_CHILD
-        ? "a male face of a child boy with male hair style"
+        ? "a male face of a little boy with male hair style"
         : preset === PRESET.FEMALE_CHILD
-        ? "a female face of a child girl with female hair style"
+        ? "a female face of a little girl with female hair style"
         : preset === PRESET.MALE_TEEN
-        ? "a male face of a teen man with male hair style"
+        ? "a male face of a teenage boy with male hair style"
         : preset === PRESET.FEMALE_TEEN
-        ? "a female face of a teen woman with female hair style"
+        ? "a female face of a teenage girl with female hair style"
         : preset === PRESET.MALE_ADULT
         ? "a male face of a adult man with male hair style"
         : preset === PRESET.FEMALE_ADULT

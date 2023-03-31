@@ -21,6 +21,8 @@ type FileInputProps<TFieldValues extends FieldValues> = {
   maxFiles?: number;
   selectedFile: File | null;
   setSelectedFile: SetState<File | null>;
+  cropData?: string | null;
+  setCropData?: SetState<string | null>;
   previewType?: "image" | "name";
   isUploading?: boolean;
   disabled?: boolean;
@@ -37,6 +39,8 @@ const FileInput = <TFieldValues extends FieldValues>({
   maxFiles = 1,
   selectedFile,
   setSelectedFile,
+  cropData,
+  setCropData,
   previewType = "image",
   isUploading = false,
   disabled = false,
@@ -50,6 +54,7 @@ const FileInput = <TFieldValues extends FieldValues>({
         setValue(name, file as PathValue<TFieldValues, Path<TFieldValues>>, {
           shouldValidate: true,
         });
+        setCropData?.(null);
         setSelectedFile(file);
       });
       rejectedFiles.forEach((file) => {
@@ -78,7 +83,7 @@ const FileInput = <TFieldValues extends FieldValues>({
         }
       });
     },
-    [maxSize, name, setSelectedFile, setValue]
+    [maxSize, name, setCropData, setSelectedFile, setValue]
   );
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
@@ -122,7 +127,7 @@ const FileInput = <TFieldValues extends FieldValues>({
               </div>
             ) : null}
             <Image
-              src={URL.createObjectURL(selectedFile)}
+              src={cropData ? cropData : URL.createObjectURL(selectedFile)}
               alt={selectedFile.name ?? "preview"}
               fill
               className="absolute inset-0 -z-10 rounded-lg object-cover"

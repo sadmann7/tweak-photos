@@ -1,4 +1,5 @@
 import CompareSlider from "@/components/CompareSlider";
+import CropModal from "@/components/CropModal";
 import { Icons } from "@/components/Icons";
 import DefaultLayout from "@/components/layouts/DefaultLayout";
 import Accordion from "@/components/ui/Accordion";
@@ -23,6 +24,7 @@ import { downloadFile } from "@/utils/download";
 import { hexToHairColor } from "@/utils/format";
 import { useAutoAnimate } from "@formkit/auto-animate/react";
 import { zodResolver } from "@hookform/resolvers/zod";
+import "cropperjs/dist/cropper.css";
 import { AlertTriangle, Download, Loader2, Tv2, Upload } from "lucide-react";
 import { useSession } from "next-auth/react";
 import Head from "next/head";
@@ -49,6 +51,8 @@ type TInputs = z.infer<typeof schema>;
 
 const Home: NextPageWithLayout = () => {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [isCropperOpen, setIsCropperOpen] = useState(false);
+  const [cropData, setCropData] = useState<string | null>(null);
   const [originalImage, setOriginalImage] = useState<OriginalImage | null>(
     null
   );
@@ -77,6 +81,7 @@ const Home: NextPageWithLayout = () => {
     if (!(data.image instanceof File)) return;
     await new Promise((resolve) => setTimeout(resolve, 200));
     setIsLoading(true);
+
     const reader = new FileReader();
     reader.readAsDataURL(data.image);
     reader.onload = async () => {
@@ -88,7 +93,7 @@ const Home: NextPageWithLayout = () => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          base64,
+          base64: cropData ? cropData : base64,
         }),
       });
 
@@ -104,34 +109,34 @@ const Home: NextPageWithLayout = () => {
           url: uploadedFile.secureUrl,
         });
 
-        // generate image from replicate
-        setIsLoading(true);
-        await new Promise((resolve) => setTimeout(resolve, 200));
-        setIsLoading(true);
-        const response2 = await fetch("/api/generate", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            ...data,
-            image: uploadedFile.secureUrl,
-          }),
-        });
+        // // generate image from replicate
+        // setIsLoading(true);
+        // await new Promise((resolve) => setTimeout(resolve, 200));
+        // setIsLoading(true);
+        // const response2 = await fetch("/api/generate", {
+        //   method: "POST",
+        //   headers: {
+        //     "Content-Type": "application/json",
+        //   },
+        //   body: JSON.stringify({
+        //     ...data,
+        //     image: uploadedFile.secureUrl,
+        //   }),
+        // });
 
-        const response3 = (await response2.json()) as ResponseData;
-        if (response2.status !== 200) {
-          response3 instanceof Object
-            ? setError(response3.output)
-            : setError(response3);
-          setIsLoading(false);
-        } else {
-          setGeneratedImage(response3.output);
+        // const response3 = (await response2.json()) as ResponseData;
+        // if (response2.status !== 200) {
+        //   response3 instanceof Object
+        //     ? setError(response3.output)
+        //     : setError(response3);
+        //   setIsLoading(false);
+        // } else {
+        //   setGeneratedImage(response3.output);
 
-          setTimeout(() => {
-            setIsLoading(false);
-          }, 1300);
-        }
+        //   setTimeout(() => {
+        //     setIsLoading(false);
+        //   }, 1300);
+        // }
       }
     };
   };
@@ -280,7 +285,7 @@ const Home: NextPageWithLayout = () => {
                 </Button>
                 <Button
                   aria-label="Download generated image"
-                  variant="secondary"
+                  variant="white"
                   className="w-full gap-2 text-sm sm:text-base"
                   onClick={() => {
                     downloadFile(
@@ -327,7 +332,8 @@ const Home: NextPageWithLayout = () => {
                 ) : null}
               </fieldset>
               <div ref={container} className="w-full">
-                {watch("preset") === PRESET.NO_PRESET ? (
+                {watch("preset") === PRESET.NO_PRESET ||
+                watch("preset") === undefined ? (
                   <div className="mt-6 space-y-6">
                     <div className="flex w-full flex-col gap-5 sm:flex-row sm:items-start sm:justify-between">
                       <fieldset className="grid w-full gap-2.5">
@@ -491,9 +497,17 @@ const Home: NextPageWithLayout = () => {
               <fieldset className="mt-6 grid w-full gap-3">
                 <label
                   htmlFor="image"
-                  className="text-sm font-medium text-gray-50 sm:text-base"
+                  className="flex items-center justify-between gap-2 text-sm font-medium text-gray-50 sm:text-base"
                 >
-                  Upload your image
+                  <span className="flex-1">Upload your image</span>
+                  {selectedFile ? (
+                    <CropModal
+                      isOpen={isCropperOpen}
+                      setIsOpen={setIsCropperOpen}
+                      selectedFile={selectedFile}
+                      setCropData={setCropData}
+                    />
+                  ) : null}
                 </label>
                 <FileInput
                   name="image"
@@ -501,6 +515,8 @@ const Home: NextPageWithLayout = () => {
                   maxSize={10 * 1024 * 1024}
                   selectedFile={selectedFile}
                   setSelectedFile={setSelectedFile}
+                  cropData={cropData}
+                  setCropData={setCropData}
                   disabled={isLoading}
                 />
                 {formState.errors.image?.message ? (
