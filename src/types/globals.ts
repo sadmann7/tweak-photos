@@ -114,7 +114,7 @@ export type UploadedFile = {
 };
 
 // replicate
-export type StyleClipBody = {
+export type EditBody = {
   version: string;
   input: {
     input: string;
@@ -125,7 +125,7 @@ export type StyleClipBody = {
   };
 };
 
-export type CodeFormerBody = {
+export type RestoreBody = {
   version: string;
   input: {
     image: string;
@@ -133,6 +133,13 @@ export type CodeFormerBody = {
     background_enhance: boolean;
     face_upsample: boolean;
     upscale: number;
+  };
+};
+
+export type RemoveBgBody = {
+  version: string;
+  input: {
+    image: string;
   };
 };
 

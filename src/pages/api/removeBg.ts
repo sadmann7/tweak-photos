@@ -1,8 +1,8 @@
 import { env } from "@/env.mjs";
 import type {
+  RemoveBgBody,
   ResponseData,
-  ResponseResult,
-  RestoreBody,
+  ResponseResult
 } from "@/types/globals";
 import type { NextApiRequest, NextApiResponse } from "next";
 
@@ -12,7 +12,7 @@ interface ExtendedNextApiRequest extends NextApiRequest {
   };
 }
 
-export type JsonResponse = ResponseResult<RestoreBody["input"], string>;
+export type JsonResponse = ResponseResult<RemoveBgBody["input"], string>;
 
 export default async function handler(
   req: ExtendedNextApiRequest,
@@ -23,15 +23,12 @@ export default async function handler(
     console.log(image);
 
     // POST request to Replicate to start the image restoration generation process
-    const responseBody: RestoreBody = {
+    const responseBody: RemoveBgBody = {
       version:
-        "7de2ea26c616d5bf2245ad0d5e24f0ff9a6204578a5c876db53142edd9d2cd56",
+        "da7d45f3b836795f945f221fc0b01a6d3ab7f5e163f13208948ad436001e2255",
       input: {
         image,
-        codeformer_fidelity: 0.7,
-        background_enhance: true,
-        face_upsample: true,
-        upscale: 2,
+      
       },
     };
 

@@ -5,9 +5,9 @@ import {
   PRESET,
   SMILE,
   type COSMETICS,
+  type EditBody,
   type ResponseData,
   type ResponseResult,
-  type StyleClipBody,
 } from "@/types/globals";
 import { hexToHairColor } from "@/utils/format";
 import type { NextApiRequest, NextApiResponse } from "next";
@@ -25,7 +25,7 @@ interface ExtendedNextApiRequest extends NextApiRequest {
   };
 }
 
-export type JsonResponse = ResponseResult<StyleClipBody["input"], string>;
+export type JsonResponse = ResponseResult<EditBody["input"], string>;
 
 export default async function handler(
   req: ExtendedNextApiRequest,
@@ -89,7 +89,7 @@ export default async function handler(
     });
 
     // POST request to Replicate to start the image restoration generation process
-    const responseBody: StyleClipBody = {
+    const responseBody: EditBody = {
       version:
         "7af9a66f36f97fee2fece7dcc927551a951f0022cbdd23747b9212f23fc17021",
       input: {

@@ -177,6 +177,39 @@ const Home: NextPageWithLayout = () => {
                 restored: true,
               });
             }
+          } else if (watch("bgRemoved")) {
+            await new Promise((resolve) => setTimeout(resolve, 200));
+            const removeBgResponse = await fetch("/api/removeBg", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                editId: editResponse2.id,
+                image: editResponse2.output,
+              }),
+            });
+            const removeBgResponse2 =
+              (await removeBgResponse.json()) as ResponseData;
+            if (removeBgResponse.status !== 200) {
+              removeBgResponse2 instanceof Error
+                ? setError(removeBgResponse2.message)
+                : removeBgResponse2 instanceof Object
+                ? setError(removeBgResponse2.output)
+                : setError(removeBgResponse2);
+              setIsLoading(false);
+            } else {
+              setGeneratedImage(removeBgResponse2.output);
+              await createPhotoMutation.mutateAsync({
+                inputImage: uploadedFile.secureUrl,
+                editedId: editResponse2.id,
+                editedImage: editResponse2.output ?? "",
+                bgRemovedId: removeBgResponse2.id,
+                bgRemovedImage: removeBgResponse2.output ?? "",
+                prompt: editResponse2.prompt ?? "",
+                bgRemoved: true,
+              });
+            }
           } else {
             setGeneratedImage(editResponse2.output);
             await createPhotoMutation.mutateAsync({
