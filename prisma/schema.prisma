@@ -3,9 +3,9 @@ generator client {
 }
 
 datasource db {
-    provider          = "postgresql"
-    url               = env("DATABASE_URL")
-    shadowDatabaseUrl = env("SHADOW_DATABASE_URL")
+    provider = "postgresql"
+    url      = env("DATABASE_URL")
+    // shadowDatabaseUrl = env("SHADOW_DATABASE_URL")
 }
 
 // Necessary for Next auth
@@ -67,7 +67,6 @@ model Photo {
     outputImage String
     prompt      String
     restored    Boolean  @default(false)
-    upscaled    Boolean  @default(false)
     bgRemoved   Boolean  @default(false)
     user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
     userId      String

@@ -44,7 +44,6 @@ const schema = z.object({
   smile: z.nativeEnum(SMILE).default(SMILE.NO_SMILE),
   cosmetics: z.array(z.nativeEnum(COSMETICS)).default([]),
   restored: z.boolean().default(false),
-  upscaled: z.boolean().default(false),
   bgRemoved: z.boolean().default(false),
 });
 type TInputs = z.infer<typeof schema>;
@@ -463,9 +462,7 @@ const Home: NextPageWithLayout = () => {
                   className="text-sm font-medium text-gray-50 sm:text-base"
                 >
                   Choose advanced features{" "}
-                  <span className="text-gray-400">
-                    (sign in to use these features)
-                  </span>
+                  <span className="text-gray-400">(max 1)</span>
                 </label>
                 <Accordion
                   buttonLabel="Advanced features"
@@ -482,32 +479,13 @@ const Home: NextPageWithLayout = () => {
                           description="Old and blurry face photo restoration"
                           disabled={
                             session.status === "loading" ||
-                            session.status === "unauthenticated"
+                            session.status === "unauthenticated" ||
+                            watch("bgRemoved") === true
                           }
                         />
                         {formState.errors.restored ? (
                           <p className="-mt-1 text-sm font-medium text-red-500">
                             {formState.errors.restored.message}
-                          </p>
-                        ) : null}
-                      </fieldset>
-                      <fieldset className="grid w-full gap-2.5">
-                        <label htmlFor="upscaled" className="sr-only">
-                          Upscale photo
-                        </label>
-                        <ToggleInput
-                          control={control}
-                          name="upscaled"
-                          label="Upscale photo"
-                          description="Low resolution face photo upscaling"
-                          disabled={
-                            session.status === "loading" ||
-                            session.status === "unauthenticated"
-                          }
-                        />
-                        {formState.errors.upscaled ? (
-                          <p className="-mt-1 text-sm font-medium text-red-500">
-                            {formState.errors.upscaled.message}
                           </p>
                         ) : null}
                       </fieldset>
@@ -522,7 +500,8 @@ const Home: NextPageWithLayout = () => {
                           description="Face photo background removal"
                           disabled={
                             session.status === "loading" ||
-                            session.status === "unauthenticated"
+                            session.status === "unauthenticated" ||
+                            watch("restored") === true
                           }
                         />
                         {formState.errors.bgRemoved ? (

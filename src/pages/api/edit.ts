@@ -23,7 +23,6 @@ interface ExtendedNextApiRequest extends NextApiRequest {
     smile: SMILE;
     cosmetics: COSMETICS[];
     restored: boolean;
-    upscaled: boolean;
     bgRemoved: boolean;
   };
 }
@@ -43,7 +42,6 @@ export default async function handler(
       smile,
       cosmetics,
       restored,
-      upscaled,
       bgRemoved,
     } = req.body;
 
@@ -180,7 +178,6 @@ export default async function handler(
             outputImage: generatedOutput,
             prompt: sanitizedPrompt,
             restored,
-            upscaled,
             bgRemoved,
           },
         });
