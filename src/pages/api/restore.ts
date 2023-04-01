@@ -8,7 +8,6 @@ import type { NextApiRequest, NextApiResponse } from "next";
 
 interface ExtendedNextApiRequest extends NextApiRequest {
   body: {
-    editId: string;
     image: string;
   };
 }
@@ -20,12 +19,8 @@ export default async function handler(
   res: NextApiResponse<ResponseData | string>
 ) {
   try {
-    const { editId, image } = req.body;
-
-    console.log({
-      editId,
-      image,
-    });
+    const { image } = req.body;
+    console.log(image);
 
     // POST request to Replicate to start the image restoration generation process
     const responseBody: CodeFormerBody = {
@@ -88,6 +83,7 @@ export default async function handler(
       id: generationId,
       input: originalInput,
       output: generatedOutput,
+      prompt: null,
     });
   } catch (error) {
     console.error(error);

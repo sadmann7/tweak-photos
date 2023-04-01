@@ -140,6 +140,7 @@ export type ResponseData = {
   id: string;
   input: string | null;
   output: string | null;
+  prompt: string | null;
 };
 
 export type ResponseResult<TInput, TOutput> = {

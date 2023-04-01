@@ -23,8 +23,8 @@ export const photosRouter = createTRPCRouter({
         restoredImage: z.string().optional(),
         bgRemovedImage: z.string().optional(),
         prompt: z.string(),
-        restored: z.boolean(),
-        bgRemoved: z.boolean(),
+        restored: z.boolean().default(false),
+        bgRemoved: z.boolean().default(false),
       })
     )
     .mutation(async ({ ctx, input }) => {

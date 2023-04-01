@@ -32,16 +32,7 @@ export default async function handler(
   res: NextApiResponse<ResponseData | string>
 ) {
   try {
-    const {
-      image,
-      preset,
-      hairStyle,
-      hairColor,
-      smile,
-      cosmetics,
-      restored,
-      bgRemoved,
-    } = req.body;
+    const { image, preset, hairStyle, hairColor, smile, cosmetics } = req.body;
 
     const goodPrompt =
       "a face wearing these cosmetics: lipstick, eyeliner, eyeshadow, smiling with a big smile and black hair";
@@ -158,6 +149,7 @@ export default async function handler(
       id: generationId,
       input: originalInput,
       output: generatedOutput,
+      prompt: finalPrompt,
     });
   } catch (error) {
     console.error(error);

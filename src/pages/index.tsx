@@ -20,6 +20,7 @@ import {
   type ResponseData,
   type UploadedFile,
 } from "@/types/globals";
+import { api } from "@/utils/api";
 import { downloadFile } from "@/utils/download";
 import { hexToHairColor } from "@/utils/format";
 import { useAutoAnimate } from "@formkit/auto-animate/react";
@@ -61,6 +62,16 @@ const Home: NextPageWithLayout = () => {
   const [error, setError] = useState<string | null>(null);
   const [isDownloading, setIsDownloading] = useState(false);
   const session = useSession();
+
+  // create photo mutation
+  const createPhotoMutation = api.photos.create.useMutation({
+    onSuccess: (data) => {
+      console.log(data);
+    },
+    onError: (error) => {
+      toast.error(error.message);
+    },
+  });
 
   // react-hook-form
   const { handleSubmit, formState, watch, control, setValue, reset } =
@@ -156,9 +167,24 @@ const Home: NextPageWithLayout = () => {
               setIsLoading(false);
             } else {
               setGeneratedImage(restoreResponse2.output);
+              await createPhotoMutation.mutateAsync({
+                inputImage: uploadedFile.secureUrl,
+                editedId: editResponse2.id,
+                editedImage: editResponse2.output ?? "",
+                restoredId: restoreResponse2.id,
+                restoredImage: restoreResponse2.output ?? "",
+                prompt: editResponse2.prompt ?? "",
+                restored: true,
+              });
             }
           } else {
             setGeneratedImage(editResponse2.output);
+            await createPhotoMutation.mutateAsync({
+              editedId: editResponse2.id,
+              editedImage: editResponse2.output ?? "",
+              inputImage: uploadedFile.secureUrl,
+              prompt: editResponse2.prompt ?? "",
+            });
           }
 
           setTimeout(() => {
