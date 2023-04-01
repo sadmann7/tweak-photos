@@ -1,5 +1,4 @@
 import { HAIR_COLOR } from "@/types/globals";
-import tinycolor from "@ctrl/tinycolor";
 
 export const toTitleCase = (str: string): string => {
   return str
@@ -15,11 +14,6 @@ export const toSentenceCase = (str: string): string => {
     .split("-")
     .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
     .join("-");
-};
-
-export const hexToColorName = (hex: string): string => {
-  const color = tinycolor(hex);
-  return color.toName() || color.toHexString();
 };
 
 export const hexToHairColor = (hex: string): string => {

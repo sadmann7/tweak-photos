@@ -1,6 +1,7 @@
 import CompareSlider from "@/components/CompareSlider";
 import CropModal from "@/components/CropModal";
 import { Icons } from "@/components/Icons";
+import ImageCarousel from "@/components/ImageCarousel";
 import DefaultLayout from "@/components/layouts/DefaultLayout";
 import Accordion from "@/components/ui/Accordion";
 import Button from "@/components/ui/Button";
@@ -57,6 +58,7 @@ const Home: NextPageWithLayout = () => {
     null
   );
   const [generatedImage, setGeneratedImage] = useState<string | null>(null);
+  const [finalImage, setFinalImage] = useState<string | null>(null);
   const [isComparing, setIsComparing] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -143,8 +145,22 @@ const Home: NextPageWithLayout = () => {
             : setError(editResponse2);
           setIsLoading(false);
         } else {
-          // restore image
+          setGeneratedImage(editResponse2.output);
+          if (
+            session.status === "authenticated" &&
+            !watch("restored") &&
+            !watch("bgRemoved")
+          ) {
+            await createPhotoMutation.mutateAsync({
+              editedId: editResponse2.id,
+              editedImage: editResponse2.output ?? "",
+              inputImage: uploadedFile.secureUrl,
+              prompt: editResponse2.prompt ?? "",
+            });
+          }
+
           if (watch("restored")) {
+            // restore image
             await new Promise((resolve) => setTimeout(resolve, 200));
             const restoreResponse = await fetch("/api/restore", {
               method: "POST",
@@ -166,7 +182,7 @@ const Home: NextPageWithLayout = () => {
                 : setError(restoreResponse2);
               setIsLoading(false);
             } else {
-              setGeneratedImage(restoreResponse2.output);
+              setFinalImage(restoreResponse2.output);
               if (session.status === "authenticated") {
                 await createPhotoMutation.mutateAsync({
                   inputImage: uploadedFile.secureUrl,
@@ -180,6 +196,7 @@ const Home: NextPageWithLayout = () => {
               }
             }
           } else if (watch("bgRemoved")) {
+            // remove background
             await new Promise((resolve) => setTimeout(resolve, 200));
             const removeBgResponse = await fetch("/api/removeBg", {
               method: "POST",
@@ -201,7 +218,7 @@ const Home: NextPageWithLayout = () => {
                 : setError(removeBgResponse2);
               setIsLoading(false);
             } else {
-              setGeneratedImage(removeBgResponse2.output);
+              setFinalImage(removeBgResponse2.output);
               if (session.status === "authenticated") {
                 await createPhotoMutation.mutateAsync({
                   inputImage: uploadedFile.secureUrl,
@@ -214,21 +231,11 @@ const Home: NextPageWithLayout = () => {
                 });
               }
             }
-          } else {
-            setGeneratedImage(editResponse2.output);
-            if (session.status === "authenticated") {
-              await createPhotoMutation.mutateAsync({
-                editedId: editResponse2.id,
-                editedImage: editResponse2.output ?? "",
-                inputImage: uploadedFile.secureUrl,
-                prompt: editResponse2.prompt ?? "",
-              });
-            }
           }
 
           setTimeout(() => {
             setIsLoading(false);
-          }, 1500);
+          }, 8000);
         }
       }
     };
@@ -240,8 +247,29 @@ const Home: NextPageWithLayout = () => {
   console.log({
     originalImage,
     generatedImage,
+    finalImage,
     isLoading,
   });
+
+  // moch image generation
+  const mochGenerateImage = async () => {
+    setIsLoading(true);
+    await new Promise((resolve) => setTimeout(resolve, 200));
+    setOriginalImage({
+      name: "original.jpg",
+      url: "https://res.cloudinary.com/dasxoa9r4/image/upload/v1680347552/tweak-photos/zy3fssd21xtvlliohbvu.jpg",
+    });
+    setGeneratedImage(
+      "https://replicate.delivery/pbxt/ZBwes0dQqRzuSq4kXHEo0yNBhHn9uuCvXp2KfbUbYKykOctQA/out.jpg"
+    );
+    setFinalImage(
+      "https://replicate.delivery/pbxt/zJfZznfzkjuyPkrksSpywqoBfYSWiKfvNzU06UIewndD2hrFC/output.png"
+    );
+
+    setTimeout(() => {
+      setIsLoading(false);
+    }, 7000);
+  };
 
   return (
     <>
@@ -282,6 +310,14 @@ const Home: NextPageWithLayout = () => {
               </Button>
             </div>
           </div>
+          <Button
+            aria-label="moch generate image"
+            variant="ghost"
+            className="h-auto w-fit gap-2 border border-gray-700 px-4 py-2.5 active:scale-95"
+            onClick={() => void mochGenerateImage()}
+          >
+            Moch generate image
+          </Button>
           {isLoading ? (
             <div className="grid w-full place-items-center">
               <h2 className="text-lg font-medium text-gray-50 sm:text-xl">
@@ -309,6 +345,7 @@ const Home: NextPageWithLayout = () => {
                 onClick={() => {
                   setOriginalImage(null);
                   setGeneratedImage(null);
+                  setFinalImage(null);
                   setSelectedFile(null);
                   setIsCropperOpen(false);
                   setCropData(null);
@@ -322,95 +359,101 @@ const Home: NextPageWithLayout = () => {
                 Try again
               </Button>
             </div>
-          ) : originalImage && generatedImage ? (
-            <div className="grid w-full place-items-center gap-8">
-              <Toggle
-                enabled={isComparing}
-                setEnabled={setIsComparing}
-                enabledLabel="Compare"
-                disabledLabel="Side by side"
+          ) : originalImage && generatedImage && finalImage ? (
+            // <div className="grid w-full place-items-center gap-8">
+            //   <Toggle
+            //     enabled={isComparing}
+            //     setEnabled={setIsComparing}
+            //     enabledLabel="Compare"
+            //     disabledLabel="Side by side"
+            //   />
+            //   {isComparing ? (
+            //     <CompareSlider
+            //       itemOneName={originalImage.name ?? "original"}
+            //       itemOneUrl={originalImage.url}
+            //       itemTwoName="Generated"
+            //       itemTwoUrl={generatedImage}
+            //       className="aspect-square max-h-[480px] rounded-xl"
+            //     />
+            //   ) : (
+            //     <div className="flex w-full flex-col items-center gap-6 sm:flex-row sm:gap-4">
+            //       <div className="grid w-full place-items-center gap-2 sm:w-1/2">
+            //         <h2 className="text-base font-medium text-gray-50 sm:text-lg">
+            //           Original image
+            //         </h2>
+            //         <Image
+            //           src={originalImage.url}
+            //           alt={originalImage.name ?? "original"}
+            //           width={480}
+            //           height={480}
+            //           className="rounded-xl"
+            //           priority
+            //         />
+            //       </div>
+            //       <div className="grid w-full place-items-center gap-2 sm:w-1/2">
+            //         <h2 className="text-base font-medium text-gray-50 sm:text-lg">
+            //           Generated image
+            //         </h2>
+            //         <Image
+            //           src={generatedImage}
+            //           alt={"Generated"}
+            //           width={480}
+            //           height={480}
+            //           className="rounded-xl"
+            //           priority
+            //         />
+            //       </div>
+            //     </div>
+            //   )}
+            //   <div className="flex w-full max-w-sm flex-col items-center justify-center gap-4 sm:flex-row">
+            //     <Button
+            //       aria-label="Generate another image"
+            //       className="w-full gap-2 text-sm sm:text-base"
+            //       onClick={() => {
+            //         setOriginalImage(null);
+            //         setGeneratedImage(null);
+            //         setFinalImage(null);
+            //         setSelectedFile(null);
+            //         setIsCropperOpen(false);
+            //         setCropData(null);
+            //         setIsLoading(false);
+            //         setIsComparing(false);
+            //         setError(null);
+            //         setIsDownloading(false);
+            //         reset();
+            //       }}
+            //     >
+            //       <Upload className="h-4 w-4 stroke-2" aria-hidden="true" />
+            //       <span className="whitespace-nowrap">Generate again</span>
+            //     </Button>
+            //     <Button
+            //       aria-label="Download generated image"
+            //       variant="white"
+            //       className="w-full gap-2 text-sm sm:text-base"
+            //       onClick={() => {
+            //         downloadFile(
+            //           generatedImage,
+            //           "generated-image.png",
+            //           setIsDownloading
+            //         );
+            //       }}
+            //     >
+            //       {isDownloading ? (
+            //         <Loader2
+            //           className="h-4 w-4 animate-spin"
+            //           aria-hidden="true"
+            //         />
+            //       ) : (
+            //         <Download className="h-4 w-4" aria-hidden="true" />
+            //       )}
+            //       <span className="whitespace-nowrap">Download image</span>
+            //     </Button>
+            //   </div>
+            // </div>
+            <div className="mx-auto w-full max-w-lg">
+              <ImageCarousel
+                data={[originalImage.url, generatedImage, finalImage]}
               />
-              {isComparing ? (
-                <CompareSlider
-                  itemOneName={originalImage.name ?? "original"}
-                  itemOneUrl={originalImage.url}
-                  itemTwoName="Generated"
-                  itemTwoUrl={generatedImage}
-                  className="aspect-square max-h-[480px] rounded-xl"
-                />
-              ) : (
-                <div className="flex w-full flex-col items-center gap-6 sm:flex-row sm:gap-4">
-                  <div className="grid w-full place-items-center gap-2 sm:w-1/2">
-                    <h2 className="text-base font-medium text-gray-50 sm:text-lg">
-                      Original image
-                    </h2>
-                    <Image
-                      src={originalImage.url}
-                      alt={originalImage.name ?? "original"}
-                      width={480}
-                      height={480}
-                      className="rounded-xl"
-                      priority
-                    />
-                  </div>
-                  <div className="grid w-full place-items-center gap-2 sm:w-1/2">
-                    <h2 className="text-base font-medium text-gray-50 sm:text-lg">
-                      Generated image
-                    </h2>
-                    <Image
-                      src={generatedImage}
-                      alt={"Generated"}
-                      width={480}
-                      height={480}
-                      className="rounded-xl"
-                      priority
-                    />
-                  </div>
-                </div>
-              )}
-              <div className="flex w-full max-w-sm flex-col items-center justify-center gap-4 sm:flex-row">
-                <Button
-                  aria-label="Generate another image"
-                  className="w-full gap-2 text-sm sm:text-base"
-                  onClick={() => {
-                    setOriginalImage(null);
-                    setGeneratedImage(null);
-                    setSelectedFile(null);
-                    setIsCropperOpen(false);
-                    setCropData(null);
-                    setIsLoading(false);
-                    setIsComparing(false);
-                    setError(null);
-                    setIsDownloading(false);
-                    reset();
-                  }}
-                >
-                  <Upload className="h-4 w-4 stroke-2" aria-hidden="true" />
-                  <span className="whitespace-nowrap">Generate again</span>
-                </Button>
-                <Button
-                  aria-label="Download generated image"
-                  variant="white"
-                  className="w-full gap-2 text-sm sm:text-base"
-                  onClick={() => {
-                    downloadFile(
-                      generatedImage,
-                      "generated-image.png",
-                      setIsDownloading
-                    );
-                  }}
-                >
-                  {isDownloading ? (
-                    <Loader2
-                      className="h-4 w-4 animate-spin"
-                      aria-hidden="true"
-                    />
-                  ) : (
-                    <Download className="h-4 w-4" aria-hidden="true" />
-                  )}
-                  <span className="whitespace-nowrap">Download image</span>
-                </Button>
-              </div>
             </div>
           ) : (
             <form
@@ -523,14 +566,14 @@ const Home: NextPageWithLayout = () => {
               </div>
               <fieldset className="mt-6 grid w-full gap-2.5">
                 <label
-                  htmlFor="advancedFeatures"
+                  htmlFor="aditionalFeatures"
                   className="text-sm font-medium text-gray-50 sm:text-base"
                 >
-                  Choose advanced features{" "}
+                  Toggle aditional features{" "}
                   <span className="text-gray-400">(max 1)</span>
                 </label>
                 <Accordion
-                  buttonLabel="Advanced features"
+                  buttonLabel="Aditional features"
                   panelContent={
                     <Fragment>
                       <fieldset className="grid w-full gap-2.5">
