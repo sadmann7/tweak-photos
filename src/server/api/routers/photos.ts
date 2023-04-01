@@ -12,6 +12,43 @@ export const photosRouter = createTRPCRouter({
     return photos;
   }),
 
+  create: protectedProcedure
+    .input(
+      z.object({
+        editedId: z.string(),
+        restoredId: z.string().optional(),
+        bgRemovedId: z.string().optional(),
+        inputImage: z.string(),
+        editedImage: z.string(),
+        restoredImage: z.string().optional(),
+        bgRemovedImage: z.string().optional(),
+        prompt: z.string(),
+        restored: z.boolean(),
+        bgRemoved: z.boolean(),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      const photo = await ctx.prisma.photo.create({
+        data: {
+          user: {
+            connect: {
+              id: ctx.session.user.id,
+            },
+          },
+          editedId: input.editedId,
+          restoredId: input.restoredId,
+          bgRemovedId: input.bgRemovedId,
+          inputImage: input.inputImage,
+          editedImage: input.editedImage,
+          restoredImage: input.restoredImage,
+          prompt: input.prompt,
+          restored: input.restored,
+          bgRemoved: input.bgRemoved,
+        },
+      });
+      return photo;
+    }),
+
   delete: protectedProcedure
     .input(z.string())
     .mutation(async ({ ctx, input }) => {

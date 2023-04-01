@@ -61,15 +61,19 @@ enum USER_ROLE {
 }
 
 model Photo {
-    id          String   @id @default(cuid())
-    replicateId String   @unique
-    inputImage  String
-    outputImage String
-    prompt      String
-    restored    Boolean  @default(false)
-    bgRemoved   Boolean  @default(false)
-    user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-    userId      String
-    createdAt   DateTime @default(now())
-    updatedAt   DateTime @updatedAt
+    id             String   @id @default(cuid())
+    editedId       String   @unique
+    restoredId     String?  @unique
+    bgRemovedId    String?  @unique
+    inputImage     String
+    editedImage    String
+    restoredImage  String?
+    bgRemovedImage String?
+    prompt         String
+    restored       Boolean  @default(false)
+    bgRemoved      Boolean  @default(false)
+    user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+    userId         String
+    createdAt      DateTime @default(now())
+    updatedAt      DateTime @updatedAt
 }

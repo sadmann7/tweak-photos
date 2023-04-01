@@ -141,7 +141,7 @@ const Home: NextPageWithLayout = () => {
                 "Content-Type": "application/json",
               },
               body: JSON.stringify({
-                replicateId: editResponse2.output,
+                editId: editResponse2.id,
                 image: editResponse2.output,
               }),
             });
