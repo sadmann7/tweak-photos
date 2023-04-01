@@ -2,7 +2,7 @@ import { env } from "@/env.mjs";
 import type {
   RemoveBgBody,
   ResponseData,
-  ResponseResult
+  ResponseResult,
 } from "@/types/globals";
 import type { NextApiRequest, NextApiResponse } from "next";
 
@@ -28,7 +28,6 @@ export default async function handler(
         "da7d45f3b836795f945f221fc0b01a6d3ab7f5e163f13208948ad436001e2255",
       input: {
         image,
-      
       },
     };
 
@@ -83,7 +82,9 @@ export default async function handler(
       prompt: null,
     });
   } catch (error) {
-    console.error(error);
+    error instanceof Error
+      ? console.error(error.message)
+      : console.error(error);
     res.status(500).json("Failed to generate image");
   }
 }

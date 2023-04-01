@@ -167,15 +167,17 @@ const Home: NextPageWithLayout = () => {
               setIsLoading(false);
             } else {
               setGeneratedImage(restoreResponse2.output);
-              await createPhotoMutation.mutateAsync({
-                inputImage: uploadedFile.secureUrl,
-                editedId: editResponse2.id,
-                editedImage: editResponse2.output ?? "",
-                restoredId: restoreResponse2.id,
-                restoredImage: restoreResponse2.output ?? "",
-                prompt: editResponse2.prompt ?? "",
-                restored: true,
-              });
+              if (session.status === "authenticated") {
+                await createPhotoMutation.mutateAsync({
+                  inputImage: uploadedFile.secureUrl,
+                  editedId: editResponse2.id,
+                  editedImage: editResponse2.output ?? "",
+                  restoredId: restoreResponse2.id,
+                  restoredImage: restoreResponse2.output ?? "",
+                  prompt: editResponse2.prompt ?? "",
+                  restored: true,
+                });
+              }
             }
           } else if (watch("bgRemoved")) {
             await new Promise((resolve) => setTimeout(resolve, 200));
@@ -200,29 +202,33 @@ const Home: NextPageWithLayout = () => {
               setIsLoading(false);
             } else {
               setGeneratedImage(removeBgResponse2.output);
-              await createPhotoMutation.mutateAsync({
-                inputImage: uploadedFile.secureUrl,
-                editedId: editResponse2.id,
-                editedImage: editResponse2.output ?? "",
-                bgRemovedId: removeBgResponse2.id,
-                bgRemovedImage: removeBgResponse2.output ?? "",
-                prompt: editResponse2.prompt ?? "",
-                bgRemoved: true,
-              });
+              if (session.status === "authenticated") {
+                await createPhotoMutation.mutateAsync({
+                  inputImage: uploadedFile.secureUrl,
+                  editedId: editResponse2.id,
+                  editedImage: editResponse2.output ?? "",
+                  bgRemovedId: removeBgResponse2.id,
+                  bgRemovedImage: removeBgResponse2.output ?? "",
+                  prompt: editResponse2.prompt ?? "",
+                  bgRemoved: true,
+                });
+              }
             }
           } else {
             setGeneratedImage(editResponse2.output);
-            await createPhotoMutation.mutateAsync({
-              editedId: editResponse2.id,
-              editedImage: editResponse2.output ?? "",
-              inputImage: uploadedFile.secureUrl,
-              prompt: editResponse2.prompt ?? "",
-            });
+            if (session.status === "authenticated") {
+              await createPhotoMutation.mutateAsync({
+                editedId: editResponse2.id,
+                editedImage: editResponse2.output ?? "",
+                inputImage: uploadedFile.secureUrl,
+                prompt: editResponse2.prompt ?? "",
+              });
+            }
           }
 
           setTimeout(() => {
             setIsLoading(false);
-          }, 1300);
+          }, 1500);
         }
       }
     };

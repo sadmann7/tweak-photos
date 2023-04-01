@@ -152,6 +152,10 @@ export default async function handler(
       prompt: finalPrompt,
     });
   } catch (error) {
+    error instanceof Error
+      ? console.error(error.message)
+      : console.error(error);
+
     console.error(error);
     res.status(500).json("Failed to generate image");
   }

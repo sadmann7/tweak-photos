@@ -86,7 +86,9 @@ export default async function handler(
       prompt: null,
     });
   } catch (error) {
-    console.error(error);
+    error instanceof Error
+      ? console.error(error.message)
+      : console.error(error);
     res.status(500).json("Failed to generate image");
   }
 }
