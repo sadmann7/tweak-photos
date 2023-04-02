@@ -90,6 +90,8 @@ const PhotoCard = ({ photo }: { photo: Photo }) => {
   // restore image
   const restoreImage = async (image: string) => {
     await new Promise((resolve) => setTimeout(resolve, 200));
+    setIsLoading(true);
+    setError(null);
     const response = await fetch("/api/restore", {
       method: "POST",
       headers: {
@@ -115,12 +117,18 @@ const PhotoCard = ({ photo }: { photo: Photo }) => {
         });
       }
     }
+
+    setTimeout(() => {
+      setIsLoading(false);
+    }, 1000);
   };
 
   // mask image
   const maskImage = async (image: string) => {
     await new Promise((resolve) => setTimeout(resolve, 200));
-    const response = await fetch("/api/bgRemove", {
+    setIsLoading(true);
+    setError(null);
+    const response = await fetch("/api/removeBg", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -145,6 +153,10 @@ const PhotoCard = ({ photo }: { photo: Photo }) => {
         });
       }
     }
+
+    setTimeout(() => {
+      setIsLoading(false);
+    }, 1000);
   };
 
   const deletePhotoMutation = api.photos.delete.useMutation({

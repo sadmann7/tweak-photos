@@ -1,6 +1,5 @@
 import CompareSlider from "@/components/CompareSlider";
 import CropModal from "@/components/CropModal";
-import { Icons } from "@/components/Icons";
 import DefaultLayout from "@/components/layouts/DefaultLayout";
 import Accordion from "@/components/ui/Accordion";
 import Button from "@/components/ui/Button";
@@ -26,8 +25,7 @@ import { hexToHairColor } from "@/utils/format";
 import { useAutoAnimate } from "@formkit/auto-animate/react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import "cropperjs/dist/cropper.css";
-import { AlertTriangle, Download, Loader2, Tv2, Upload } from "lucide-react";
-import { useSession } from "next-auth/react";
+import { AlertTriangle, Download, Loader2, Upload } from "lucide-react";
 import Head from "next/head";
 import Image from "next/image";
 import { Fragment, useState } from "react";
@@ -62,7 +60,6 @@ const Home: NextPageWithLayout = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isDownloading, setIsDownloading] = useState(false);
-  const session = useSession();
 
   // create photo mutation
   const createPhotoMutation = api.photos.create.useMutation({
@@ -145,11 +142,7 @@ const Home: NextPageWithLayout = () => {
           setIsLoading(false);
         } else {
           setGeneratedImage(editResponse2.output);
-          if (
-            session.status === "authenticated" &&
-            !watch("restored") &&
-            !watch("bgRemoved")
-          ) {
+          if (!watch("restored") && !watch("bgRemoved")) {
             await createPhotoMutation.mutateAsync({
               editedId: editResponse2.id,
               editedImage: editResponse2.output ?? "",
@@ -181,16 +174,6 @@ const Home: NextPageWithLayout = () => {
               setIsLoading(false);
             } else {
               setFinalImage(restoreResponse2.output);
-              if (session.status === "authenticated") {
-                await createPhotoMutation.mutateAsync({
-                  inputImage: uploadedFile.secureUrl,
-                  editedId: editResponse2.id,
-                  editedImage: editResponse2.output ?? "",
-                  restoredId: restoreResponse2.id,
-                  restoredImage: restoreResponse2.output ?? "",
-                  prompt: editResponse2.prompt ?? "",
-                });
-              }
             }
           } else if (watch("bgRemoved")) {
             // remove background
@@ -215,16 +198,6 @@ const Home: NextPageWithLayout = () => {
               setIsLoading(false);
             } else {
               setFinalImage(removeBgResponse2.output);
-              if (session.status === "authenticated") {
-                await createPhotoMutation.mutateAsync({
-                  inputImage: uploadedFile.secureUrl,
-                  editedId: editResponse2.id,
-                  editedImage: editResponse2.output ?? "",
-                  bgRemovedId: removeBgResponse2.id,
-                  bgRemovedImage: removeBgResponse2.output ?? "",
-                  prompt: editResponse2.prompt ?? "",
-                });
-              }
             }
           }
 
@@ -278,32 +251,8 @@ const Home: NextPageWithLayout = () => {
               Edit your face photos using AI
             </h1>
             <p className="text-center text-lg text-gray-400 sm:text-xl">
-              Upload only face photos for better results
+              Upload your face photo and tweak it to your liking
             </p>
-            <div className="flex w-full items-center justify-center gap-3">
-              <a
-                aria-label="navigate to github repo"
-                href="https://github.com/sadmann7/npm-picker"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center justify-center gap-2 rounded-md border border-gray-700 bg-transparent px-4 py-2.5 text-gray-50 transition-colors hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2 focus:ring-offset-gray-900 active:scale-95 xxs:w-fit xxs:px-4"
-              >
-                <Icons.gitHub className="h-5 w-5" aria-hidden="true" />
-                <span className="sr-only text-xs font-medium xxs:not-sr-only sm:text-sm">
-                  Star on Github
-                </span>
-              </a>
-              <Button
-                aria-label="watch demo"
-                variant="ghost"
-                className="h-auto w-fit gap-2 border border-gray-700 px-4 py-2.5 active:scale-95"
-              >
-                <Tv2 className="h-5 w-5" aria-hidden="true" />
-                <span className="sr-only text-xs font-medium xxs:not-sr-only sm:text-sm">
-                  Watch demo
-                </span>
-              </Button>
-            </div>
           </div>
           <Button
             aria-label="moch generate image"

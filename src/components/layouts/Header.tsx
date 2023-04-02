@@ -1,21 +1,15 @@
 import { Icons } from "@/components/Icons";
-import Button from "@/components/ui/Button";
-import { Menu, Transition } from "@headlessui/react";
-import { LayoutDashboard, LogOut, User } from "lucide-react";
-import { signIn, useSession } from "next-auth/react";
-import Image from "next/image";
 import Link from "next/link";
-import { Fragment, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { twMerge } from "tailwind-merge";
 
-const userLinks = [
-  { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
-  { name: "Sign out", href: "/api/auth/signout", icon: LogOut },
-];
+// const userLinks = [
+//   { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
+//   { name: "Sign out", href: "/api/auth/signout", icon: LogOut },
+// ];
 
 const Header = () => {
   const [isScrolled, setIsScrolled] = useState<boolean>(false);
-  const session = useSession();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -45,7 +39,19 @@ const Header = () => {
           <Icons.logo className="h-6 w-6" aria-hidden="true" />
           <span className="text-lg font-medium sm:text-xl">TweakPhotos</span>
         </Link>
-        {session.status === "loading" ||
+        <a
+          aria-label="navigate to github repo"
+          href="https://github.com/sadmann7/npm-picker"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex items-center gap-2 rounded-full bg-blue-600 px-2 py-2 text-base transition-colors hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2 focus:ring-offset-gray-900 active:scale-95 xxs:px-4"
+        >
+          <Icons.gitHub className="h-5 w-5" aria-hidden="true" />
+          <span className="sr-only text-xs text-gray-100 xxs:not-sr-only sm:text-sm">
+            Star on Github
+          </span>
+        </a>
+        {/* {session.status === "loading" ||
         session.status === "unauthenticated" ? (
           <Button
             aria-label="sign in"
@@ -113,7 +119,7 @@ const Header = () => {
               </Menu.Items>
             </Transition>
           </Menu>
-        )}
+        )} */}
       </nav>
     </header>
   );
