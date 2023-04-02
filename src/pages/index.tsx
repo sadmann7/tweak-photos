@@ -167,7 +167,6 @@ const Home: NextPageWithLayout = () => {
                 "Content-Type": "application/json",
               },
               body: JSON.stringify({
-                editId: editResponse2.id,
                 image: editResponse2.output,
               }),
             });
@@ -202,7 +201,6 @@ const Home: NextPageWithLayout = () => {
                 "Content-Type": "application/json",
               },
               body: JSON.stringify({
-                editId: editResponse2.id,
                 image: editResponse2.output,
               }),
             });
@@ -325,7 +323,11 @@ const Home: NextPageWithLayout = () => {
               </p>
             </div>
           ) : error ? (
-            <div role="alert" className="grid w-full place-items-center gap-4">
+            <div
+              aria-label="Error"
+              role="alert"
+              className="grid w-full place-items-center gap-4"
+            >
               <AlertTriangle
                 className="h-28 w-28 animate-pulse text-red-500"
                 aria-hidden="true"

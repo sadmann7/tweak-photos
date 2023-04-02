@@ -45,6 +45,70 @@ export const photosRouter = createTRPCRouter({
       return photo;
     }),
 
+  updateRestored: protectedProcedure
+    .input(
+      z.object({
+        id: z.string(),
+        restoredImage: z.string(),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      const photo = await ctx.prisma.photo.findUnique({
+        where: {
+          id: input.id,
+        },
+      });
+
+      if (!photo) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Photo not found",
+        });
+      }
+
+      const updatedPhoto = await ctx.prisma.photo.update({
+        where: {
+          id: input.id,
+        },
+        data: {
+          restoredImage: input.restoredImage,
+        },
+      });
+      return updatedPhoto;
+    }),
+
+  updateMasked: protectedProcedure
+    .input(
+      z.object({
+        id: z.string(),
+        bgRemovedImage: z.string(),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      const photo = await ctx.prisma.photo.findUnique({
+        where: {
+          id: input.id,
+        },
+      });
+
+      if (!photo) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Photo not found",
+        });
+      }
+
+      const updatedPhoto = await ctx.prisma.photo.update({
+        where: {
+          id: input.id,
+        },
+        data: {
+          bgRemovedImage: input.bgRemovedImage,
+        },
+      });
+      return updatedPhoto;
+    }),
+
   delete: protectedProcedure
     .input(z.string())
     .mutation(async ({ ctx, input }) => {
