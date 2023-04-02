@@ -1,7 +1,6 @@
 import CompareSlider from "@/components/CompareSlider";
 import CropModal from "@/components/CropModal";
 import { Icons } from "@/components/Icons";
-import ImageCarousel from "@/components/ImageCarousel";
 import DefaultLayout from "@/components/layouts/DefaultLayout";
 import Accordion from "@/components/ui/Accordion";
 import Button from "@/components/ui/Button";
@@ -191,7 +190,6 @@ const Home: NextPageWithLayout = () => {
                   restoredId: restoreResponse2.id,
                   restoredImage: restoreResponse2.output ?? "",
                   prompt: editResponse2.prompt ?? "",
-                  restored: true,
                 });
               }
             }
@@ -227,7 +225,6 @@ const Home: NextPageWithLayout = () => {
                   bgRemovedId: removeBgResponse2.id,
                   bgRemovedImage: removeBgResponse2.output ?? "",
                   prompt: editResponse2.prompt ?? "",
-                  bgRemoved: true,
                 });
               }
             }
@@ -257,13 +254,13 @@ const Home: NextPageWithLayout = () => {
     await new Promise((resolve) => setTimeout(resolve, 200));
     setOriginalImage({
       name: "original.jpg",
-      url: "https://res.cloudinary.com/dasxoa9r4/image/upload/v1680347552/tweak-photos/zy3fssd21xtvlliohbvu.jpg",
+      url: "https://res.cloudinary.com/dasxoa9r4/image/upload/v1680363491/tweak-photos/hzi5gdtovf7fyq0dyfll.jpg",
     });
     setGeneratedImage(
-      "https://replicate.delivery/pbxt/ZBwes0dQqRzuSq4kXHEo0yNBhHn9uuCvXp2KfbUbYKykOctQA/out.jpg"
+      "https://res.cloudinary.com/dasxoa9r4/image/upload/v1680363491/tweak-photos/hzi5gdtovf7fyq0dyfll.jpg"
     );
     setFinalImage(
-      "https://replicate.delivery/pbxt/zJfZznfzkjuyPkrksSpywqoBfYSWiKfvNzU06UIewndD2hrFC/output.png"
+      "https://res.cloudinary.com/dasxoa9r4/image/upload/v1680363491/tweak-photos/hzi5gdtovf7fyq0dyfll.jpg"
     );
 
     setTimeout(() => {
@@ -359,101 +356,97 @@ const Home: NextPageWithLayout = () => {
                 Try again
               </Button>
             </div>
-          ) : originalImage && generatedImage && finalImage ? (
-            // <div className="grid w-full place-items-center gap-8">
-            //   <Toggle
-            //     enabled={isComparing}
-            //     setEnabled={setIsComparing}
-            //     enabledLabel="Compare"
-            //     disabledLabel="Side by side"
-            //   />
-            //   {isComparing ? (
-            //     <CompareSlider
-            //       itemOneName={originalImage.name ?? "original"}
-            //       itemOneUrl={originalImage.url}
-            //       itemTwoName="Generated"
-            //       itemTwoUrl={generatedImage}
-            //       className="aspect-square max-h-[480px] rounded-xl"
-            //     />
-            //   ) : (
-            //     <div className="flex w-full flex-col items-center gap-6 sm:flex-row sm:gap-4">
-            //       <div className="grid w-full place-items-center gap-2 sm:w-1/2">
-            //         <h2 className="text-base font-medium text-gray-50 sm:text-lg">
-            //           Original image
-            //         </h2>
-            //         <Image
-            //           src={originalImage.url}
-            //           alt={originalImage.name ?? "original"}
-            //           width={480}
-            //           height={480}
-            //           className="rounded-xl"
-            //           priority
-            //         />
-            //       </div>
-            //       <div className="grid w-full place-items-center gap-2 sm:w-1/2">
-            //         <h2 className="text-base font-medium text-gray-50 sm:text-lg">
-            //           Generated image
-            //         </h2>
-            //         <Image
-            //           src={generatedImage}
-            //           alt={"Generated"}
-            //           width={480}
-            //           height={480}
-            //           className="rounded-xl"
-            //           priority
-            //         />
-            //       </div>
-            //     </div>
-            //   )}
-            //   <div className="flex w-full max-w-sm flex-col items-center justify-center gap-4 sm:flex-row">
-            //     <Button
-            //       aria-label="Generate another image"
-            //       className="w-full gap-2 text-sm sm:text-base"
-            //       onClick={() => {
-            //         setOriginalImage(null);
-            //         setGeneratedImage(null);
-            //         setFinalImage(null);
-            //         setSelectedFile(null);
-            //         setIsCropperOpen(false);
-            //         setCropData(null);
-            //         setIsLoading(false);
-            //         setIsComparing(false);
-            //         setError(null);
-            //         setIsDownloading(false);
-            //         reset();
-            //       }}
-            //     >
-            //       <Upload className="h-4 w-4 stroke-2" aria-hidden="true" />
-            //       <span className="whitespace-nowrap">Generate again</span>
-            //     </Button>
-            //     <Button
-            //       aria-label="Download generated image"
-            //       variant="white"
-            //       className="w-full gap-2 text-sm sm:text-base"
-            //       onClick={() => {
-            //         downloadFile(
-            //           generatedImage,
-            //           "generated-image.png",
-            //           setIsDownloading
-            //         );
-            //       }}
-            //     >
-            //       {isDownloading ? (
-            //         <Loader2
-            //           className="h-4 w-4 animate-spin"
-            //           aria-hidden="true"
-            //         />
-            //       ) : (
-            //         <Download className="h-4 w-4" aria-hidden="true" />
-            //       )}
-            //       <span className="whitespace-nowrap">Download image</span>
-            //     </Button>
-            //   </div>
-            // </div>
-            <div className="mx-auto w-full max-w-lg">
-              <ImageCarousel
-                data={[originalImage.url, generatedImage, finalImage]}
+          ) : originalImage && generatedImage ? (
+            <div className="grid w-full place-items-center gap-8">
+              <Toggle
+                enabled={isComparing}
+                setEnabled={setIsComparing}
+                enabledLabel="Compare"
+                disabledLabel="Side by side"
               />
+              {isComparing ? (
+                <CompareSlider
+                  itemOneName={originalImage.name ?? "original"}
+                  itemOneUrl={originalImage.url}
+                  itemTwoName="Generated"
+                  itemTwoUrl={finalImage ?? generatedImage}
+                  className="aspect-square max-h-[480px] rounded-xl"
+                />
+              ) : (
+                <div className="flex w-full flex-col items-center gap-6 sm:flex-row sm:gap-4">
+                  <div className="grid w-full place-items-center gap-2 sm:w-1/2">
+                    <h2 className="text-base font-medium text-gray-50 sm:text-lg">
+                      Original image
+                    </h2>
+                    <Image
+                      src={originalImage.url}
+                      alt={originalImage.name ?? "original"}
+                      width={480}
+                      height={480}
+                      className="rounded-xl"
+                      priority
+                    />
+                  </div>
+                  <div className="grid w-full place-items-center gap-2 sm:w-1/2">
+                    <h2 className="text-base font-medium text-gray-50 sm:text-lg">
+                      Generated image
+                    </h2>
+                    <Image
+                      src={finalImage ?? generatedImage}
+                      alt={"Generated"}
+                      width={480}
+                      height={480}
+                      className="rounded-xl"
+                      priority
+                    />
+                  </div>
+                </div>
+              )}
+              <div className="flex w-full max-w-sm flex-col items-center justify-center gap-4 sm:flex-row">
+                <Button
+                  aria-label="Generate another image"
+                  className="w-full gap-2 text-sm sm:text-base"
+                  onClick={() => {
+                    setOriginalImage(null);
+                    setGeneratedImage(null);
+                    setFinalImage(null);
+                    setSelectedFile(null);
+                    setIsCropperOpen(false);
+                    setCropData(null);
+                    setIsLoading(false);
+                    setIsComparing(false);
+                    setError(null);
+                    setIsDownloading(false);
+                    reset();
+                  }}
+                >
+                  <Upload className="h-4 w-4 stroke-2" aria-hidden="true" />
+                  <span className="whitespace-nowrap">Generate again</span>
+                </Button>
+                <Button
+                  aria-label="Download generated image"
+                  variant="white"
+                  className="w-full gap-2 text-sm sm:text-base"
+                  onClick={() => {
+                    downloadFile(generatedImage, "generated-image.webp");
+                    setIsDownloading(true);
+                    setTimeout(() => {
+                      setIsDownloading(false);
+                    }, 1000);
+                  }}
+                  disabled={isDownloading}
+                >
+                  {isDownloading ? (
+                    <Loader2
+                      className="h-4 w-4 animate-spin"
+                      aria-hidden="true"
+                    />
+                  ) : (
+                    <Download className="h-4 w-4" aria-hidden="true" />
+                  )}
+                  <span className="whitespace-nowrap">Download image</span>
+                </Button>
+              </div>
             </div>
           ) : (
             <form
@@ -585,11 +578,7 @@ const Home: NextPageWithLayout = () => {
                           name="restored"
                           label="Restore photo"
                           description="Old and blurry face photo restoration"
-                          disabled={
-                            session.status === "loading" ||
-                            session.status === "unauthenticated" ||
-                            watch("bgRemoved") === true
-                          }
+                          disabled={watch("bgRemoved") === true}
                         />
                         {formState.errors.restored ? (
                           <p className="-mt-1 text-sm font-medium text-red-500">
@@ -606,11 +595,7 @@ const Home: NextPageWithLayout = () => {
                           name="bgRemoved"
                           label="Remove background"
                           description="Face photo background removal"
-                          disabled={
-                            session.status === "loading" ||
-                            session.status === "unauthenticated" ||
-                            watch("restored") === true
-                          }
+                          disabled={watch("restored") === true}
                         />
                         {formState.errors.bgRemoved ? (
                           <p className="-mt-1 text-sm font-medium text-red-500">

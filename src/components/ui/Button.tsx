@@ -1,19 +1,18 @@
 import LoadingDots from "@/components/ui/LoadingDots";
 import { Loader2 } from "lucide-react";
-import type { ButtonHTMLAttributes, DetailedHTMLProps } from "react";
-import { forwardRef } from "react";
+import * as React from "react";
 import { twMerge } from "tailwind-merge";
 
 type ButtonProps = {
   variant?: "primary" | "white" | "gray" | "ghost";
   isLoading?: boolean;
   loadingVariant?: "spinner" | "dots";
-} & DetailedHTMLProps<
-  ButtonHTMLAttributes<HTMLButtonElement>,
+} & React.DetailedHTMLProps<
+  React.ButtonHTMLAttributes<HTMLButtonElement>,
   HTMLButtonElement
 >;
 
-const Button = forwardRef<HTMLButtonElement, ButtonProps>(
+const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
   (
     {
       className = "",

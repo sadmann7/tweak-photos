@@ -85,7 +85,7 @@ const CropModal = ({
                       aria-label="close image cropper modal"
                       type="button"
                       variant="gray"
-                      className="flex h-auto w-fit items-center gap-2 rounded-full p-2 active:scale-95"
+                      className="h-auto w-fit items-center gap-2 rounded-full p-2 active:scale-95"
                       onClick={() => setIsOpen(false)}
                     >
                       <X className="h-4 w-4" aria-hidden="true" />

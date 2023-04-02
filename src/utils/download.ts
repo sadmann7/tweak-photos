@@ -1,13 +1,7 @@
-import type { SetState } from "@/types/globals";
 import { toast } from "react-hot-toast";
 
 // download file
-export const downloadFile = (
-  url: string,
-  filename: string,
-  setIsDownloading: SetState<boolean>
-) => {
-  setIsDownloading(true);
+export const downloadFile = (url: string, filename: string) => {
   fetch(url, {
     headers: new Headers({
       Origin: location.origin,
@@ -22,7 +16,6 @@ export const downloadFile = (
         alink.download = filename;
         alink.click();
         alink.remove();
-        setIsDownloading(false);
       })
     )
     .catch((error: unknown) => {
@@ -31,6 +24,5 @@ export const downloadFile = (
         : typeof error === "string"
         ? toast.error(error)
         : toast.error("Error downloading file");
-      setIsDownloading(false);
     });
 };

@@ -70,8 +70,6 @@ model Photo {
     restoredImage  String?
     bgRemovedImage String?
     prompt         String
-    restored       Boolean  @default(false)
-    bgRemoved      Boolean  @default(false)
     user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
     userId         String
     createdAt      DateTime @default(now())
