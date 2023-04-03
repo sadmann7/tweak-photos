@@ -29,7 +29,7 @@ import "cropperjs/dist/cropper.css";
 import { AlertTriangle, Download, Loader2, Upload } from "lucide-react";
 import Head from "next/head";
 import Image from "next/image";
-import { Fragment, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 import { useForm, type SubmitHandler } from "react-hook-form";
 import { toast } from "react-hot-toast";
 import { z } from "zod";
@@ -61,6 +61,7 @@ const Home: NextPageWithLayout = () => {
   const [isComparing, setIsComparing] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [timeElapsed, setTimeElapsed] = useState(0);
   const [isDownloading, setIsDownloading] = useState(false);
 
   // create photo mutation
@@ -205,6 +206,8 @@ const Home: NextPageWithLayout = () => {
 
           setTimeout(() => {
             setIsLoading(false);
+            setSelectedTabIndex(1);
+            setSelectedTabIndex(1);
           }, 8000);
         }
       }
@@ -220,6 +223,18 @@ const Home: NextPageWithLayout = () => {
     finalImage,
     isLoading,
   });
+
+  // time counter for image generation
+  useEffect(() => {
+    if (!isLoading) {
+      setTimeElapsed(0);
+      return;
+    }
+    const interval = setInterval(() => {
+      setTimeElapsed((prev) => prev + 1);
+    }, 1000);
+    return () => clearInterval(interval);
+  }, [isLoading]);
 
   // moch image generation
   const mochGenerateImage = async () => {
@@ -238,8 +253,15 @@ const Home: NextPageWithLayout = () => {
 
     setTimeout(() => {
       setIsLoading(false);
-    }, 7000);
+      setSelectedTabIndex(1);
+    }, 8000);
   };
+
+  // revoke object URL when component unmounts
+  useEffect(() => {
+    if (!selectedFile) return;
+    return () => URL.revokeObjectURL(selectedFile.name);
+  }, [selectedFile]);
 
   return (
     <>
@@ -265,13 +287,33 @@ const Home: NextPageWithLayout = () => {
             Moch generate image
           </Button>
           {isLoading ? (
-            <div className="grid w-full place-items-center">
-              <h2 className="text-lg font-medium text-gray-50 sm:text-xl">
-                Generating image...
-              </h2>
-              <p className="mt-2 text-sm text-gray-400 sm:text-base">
-                Sit back and relax, this usually takes 15-20 seconds
-              </p>
+            <div className="relative overflow-hidden rounded-lg ring-1 ring-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2 focus:ring-offset-gray-900">
+              <div className="absolute inset-0 z-10 mx-auto flex max-w-xs flex-col items-center justify-center gap-2 text-gray-50">
+                <Loader2
+                  className="h-16 w-16 animate-spin"
+                  aria-hidden="true"
+                />
+                <h2 className="text-center text-base font-semibold sm:text-lg">
+                  Generating image, this usually takes 15-20 seconds...
+                </h2>
+                <p className="text-center text-base font-semibold sm:text-lg">
+                  {`${
+                    timeElapsed >= 60 ? `${Math.floor(timeElapsed / 60)}m` : ""
+                  }${timeElapsed % 60}s`}
+                </p>
+              </div>
+              <Image
+                src={
+                  selectedFile
+                    ? URL.createObjectURL(selectedFile)
+                    : "/images/preview-placeholder.svg"
+                }
+                alt="selected file"
+                width={480}
+                height={480}
+                className="object-cover opacity-50 blur-md filter"
+              />
+              <div className="absolute inset-0 bg-gray-900 bg-opacity-50" />
             </div>
           ) : error ? (
             <div
@@ -344,13 +386,13 @@ const Home: NextPageWithLayout = () => {
                       ),
                     },
                     {
-                      name: "Generated",
+                      name: "Edited",
                       content: (
                         <div className="relative">
                           <Button
                             aria-label="Download image"
                             variant="gray"
-                            className="absolute right-2.5 top-2.5 z-10 h-auto w-fit gap-2 rounded-full border border-gray-950 bg-gray-700/70 p-3 hover:bg-gray-700 active:scale-95"
+                            className="absolute right-2.5 top-2.5 z-10 h-auto w-fit gap-2 rounded-full border border-gray-950 bg-gray-700/70 p-2.5 hover:bg-gray-700 focus:border-none active:scale-95"
                             onClick={() => {
                               setIsDownloading(true);
                               downloadFile(generatedImage, "edited-photo.webp");
@@ -396,7 +438,7 @@ const Home: NextPageWithLayout = () => {
                           <Button
                             aria-label="Download image"
                             variant="gray"
-                            className="absolute right-2.5 top-2.5 z-10 h-auto w-fit gap-2 rounded-full border border-gray-950 bg-gray-700/70 p-3 hover:bg-gray-700 active:scale-95"
+                            className="absolute right-2.5 top-2.5 z-10 h-auto w-fit gap-2 rounded-full border border-gray-950 bg-gray-700/70 p-2.5 hover:bg-gray-700 focus:border-none active:scale-95"
                             onClick={() => {
                               setIsDownloading(true);
                               downloadFile(
@@ -455,7 +497,7 @@ const Home: NextPageWithLayout = () => {
                 }}
               >
                 <Upload className="h-4 w-4 stroke-2" aria-hidden="true" />
-                <span className="whitespace-nowrap">Generate again</span>
+                <span className="whitespace-nowrap">Edit again</span>
               </Button>
             </div>
           ) : (

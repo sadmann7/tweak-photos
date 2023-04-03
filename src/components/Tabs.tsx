@@ -22,7 +22,7 @@ const Tabs = ({ selectedIndex, setSelectedIndex, tabs }: TabsProps) => {
               key={tab.name}
               className={twMerge(
                 "w-full rounded py-2 text-sm font-medium leading-5 text-gray-100",
-                "ring-white ring-opacity-60 ring-offset-1 ring-offset-violet-400 focus:outline-none focus:ring-1",
+                "ring-white ring-opacity-60 ring-offset-1 ring-offset-blue-400 focus:outline-none focus:ring-1",
                 "ui-selected:bg-gray-900/75 ui-selected:shadow",
                 "ui-not-selected:text-blue-100 ui-not-selected:hover:bg-white/[0.12] ui-not-selected:hover:text-white"
               )}
@@ -39,7 +39,7 @@ const Tabs = ({ selectedIndex, setSelectedIndex, tabs }: TabsProps) => {
                 key={tab.name}
                 className={twMerge(
                   "rounded-md bg-gray-700 p-1",
-                  "ring-white ring-opacity-60 ring-offset-1 ring-offset-violet-400 focus:outline-none focus:ring-1"
+                  "ring-white ring-opacity-60 ring-offset-1 ring-offset-blue-400 focus:outline-none focus:ring-1"
                 )}
               >
                 {tab.content}

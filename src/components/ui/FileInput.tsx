@@ -93,6 +93,7 @@ const FileInput = <TFieldValues extends FieldValues>({
     maxFiles,
   });
 
+  // revoke object URL when component unmounts
   useEffect(() => {
     if (!selectedFile) return;
     return () => URL.revokeObjectURL(selectedFile.name);
