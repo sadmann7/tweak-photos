@@ -24,7 +24,6 @@ export enum HAIR_STYLE {
   SHORT = "Short",
   MEDIUM = "Medium",
   LONG = "Long",
-  BALD = "Bald",
   BOWL_CUT = "Bowl cut",
   BOB_CUT = "Bob cut",
   FRINGE = "Fringe",
@@ -97,7 +96,7 @@ export enum COSMETICS {
   LIPSTICK = "Lipstick",
   EYELINER = "Eyeliner",
   EYESHADOW = "Eyeshadow",
-  NOSE_RING = "Nose Ring",
+  NOSE_RING = "Nose ring",
   EARRINGS = "Earrings",
 }
 

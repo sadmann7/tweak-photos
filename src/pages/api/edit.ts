@@ -1,7 +1,6 @@
 import { env } from "@/env.mjs";
 import {
   HAIR_COLOR,
-  HAIR_STYLE,
   PRESET,
   SMILE,
   type COSMETICS,
@@ -16,7 +15,6 @@ interface ExtendedNextApiRequest extends NextApiRequest {
   body: {
     image: string;
     preset: PRESET;
-    hairStyle: HAIR_STYLE;
     hairColor: HAIR_COLOR;
     smile: SMILE;
     cosmetics: COSMETICS[];
@@ -32,10 +30,7 @@ export default async function handler(
   res: NextApiResponse<ResponseData | string>
 ) {
   try {
-    const { image, preset, hairStyle, hairColor, smile, cosmetics } = req.body;
-
-    const goodPrompt =
-      "a face wearing these cosmetics: lipstick, eyeliner, eyeshadow, smiling with a big smile and black hair";
+    const { image, preset, hairColor, smile, cosmetics } = req.body;
 
     const presetPrompt =
       preset === PRESET.NO_PRESET
@@ -54,26 +49,22 @@ export default async function handler(
         ? "a female face of a adult woman with female hair style"
         : "";
 
-    const prompt = `a ${
-      smile === SMILE.NO_SMILE ? "face with" : "smiling face with"
-    } ${
-      hairStyle === HAIR_STYLE.DEFAULT ? "" : `a ${hairStyle.toLowerCase()}`
-    } ${
-      hairColor === HAIR_COLOR.DEFAULT
-        ? ""
-        : `${hexToHairColor(hairColor).toLowerCase()} hair,`
-    } ${
+    const prompt = `a face ${
       cosmetics.length === 0
         ? ""
-        : `wearing ${cosmetics
+        : `wearing these cosmetics: ${cosmetics
             .map((c) => c.toLowerCase())
-            .join(", ")} cosmetics, and with`
-    } ${
+            .join(", ")}, `
+    }${
       smile === SMILE.NO_SMILE
         ? ""
         : smile === SMILE.SMALL_SMILE
-        ? "a little smile"
-        : "a big smile"
+        ? "smiling with a small smile, "
+        : "smiling with a a big smile, "
+    }${
+      hairColor === HAIR_COLOR.DEFAULT
+        ? ""
+        : `and ${hexToHairColor(hairColor).toLowerCase()} hair`
     }`;
 
     const sanitizedPresetPrompt = presetPrompt.replaceAll(/\s+/g, " ").trim();

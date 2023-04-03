@@ -13,7 +13,6 @@ import type { NextPageWithLayout } from "@/pages/_app";
 import {
   COSMETICS,
   HAIR_COLOR,
-  HAIR_STYLE,
   PRESET,
   SMILE,
   type OriginalImage,
@@ -38,7 +37,6 @@ const schema = z.object({
     message: "Upload an image",
   }),
   preset: z.nativeEnum(PRESET).default(PRESET.NO_PRESET),
-  hairStyle: z.nativeEnum(HAIR_STYLE).default(HAIR_STYLE.DEFAULT),
   hairColor: z.nativeEnum(HAIR_COLOR).default(HAIR_COLOR.DEFAULT),
   smile: z.nativeEnum(SMILE).default(SMILE.NO_SMILE),
   cosmetics: z.array(z.nativeEnum(COSMETICS)).default([]),
@@ -215,31 +213,6 @@ const Home: NextPageWithLayout = () => {
     return () => clearInterval(interval);
   }, [isLoading]);
 
-  // moch image generation
-  const mochGenerateImage = async () => {
-    setIsLoading(true);
-    setOriginalImage(null);
-    setGeneratedImage(null);
-    setFinalImage(null);
-    setIsGeneratedLoaded(false);
-    await new Promise((resolve) => setTimeout(resolve, 200));
-    setOriginalImage({
-      name: "original.jpg",
-      url: "https://res.cloudinary.com/dasxoa9r4/image/upload/v1680363491/tweak-photos/hzi5gdtovf7fyq0dyfll.jpg",
-    });
-    setGeneratedImage(
-      "https://res.cloudinary.com/dasxoa9r4/image/upload/v1680363491/tweak-photos/hzi5gdtovf7fyq0dyfll.jpg"
-    );
-    setFinalImage(
-      "https://res.cloudinary.com/dasxoa9r4/image/upload/v1680363491/tweak-photos/hzi5gdtovf7fyq0dyfll.jpg"
-    );
-
-    setTimeout(() => {
-      setIsLoading(false);
-      setSelectedTabIndex(1);
-    }, 8000);
-  };
-
   // revoke object URL when component unmounts
   useEffect(() => {
     if (!selectedFile) return;
@@ -261,14 +234,6 @@ const Home: NextPageWithLayout = () => {
               Upload your face photo and tweak it to your liking
             </p>
           </div>
-          <Button
-            aria-label="moch generate image"
-            variant="ghost"
-            className="h-auto w-fit gap-2 border border-gray-700 px-4 py-2.5 active:scale-95"
-            onClick={() => void mochGenerateImage()}
-          >
-            Moch generate image
-          </Button>
           {isLoading ? (
             <div className="relative overflow-hidden rounded-lg ring-1 ring-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2 focus:ring-offset-gray-900">
               <div className="absolute inset-0 z-10 mx-auto flex max-w-xs flex-col items-center justify-center gap-2 text-gray-50">
@@ -516,45 +481,25 @@ const Home: NextPageWithLayout = () => {
                 {watch("preset") === PRESET.NO_PRESET ||
                 watch("preset") === undefined ? (
                   <div className="mt-6 space-y-6">
-                    <div className="flex w-full flex-col gap-5 sm:flex-row sm:items-start sm:justify-between">
-                      <fieldset className="grid w-full gap-2.5">
-                        <label
-                          htmlFor="hairStyle"
-                          className="text-sm font-medium text-gray-50 sm:text-base"
-                        >
-                          Choose hair style
-                        </label>
-                        <DropdownSelect
-                          control={control}
-                          name="hairStyle"
-                          options={Object.values(HAIR_STYLE)}
-                        />
-                        {formState.errors.hairStyle ? (
-                          <p className="-mt-1 text-sm font-medium text-red-500">
-                            {formState.errors.hairStyle.message}
-                          </p>
-                        ) : null}
-                      </fieldset>
-                      <fieldset className="grid w-full gap-2.5">
-                        <label
-                          htmlFor="hairColor"
-                          className="text-sm font-medium text-gray-50 sm:text-base"
-                        >
-                          Choose hair color
-                        </label>
-                        <ColorPicker
-                          control={control}
-                          name="hairColor"
-                          options={Object.values(HAIR_COLOR)}
-                          formatHex={hexToHairColor}
-                        />
-                        {formState.errors.hairColor ? (
-                          <p className="-mt-1 text-sm font-medium text-red-500">
-                            {formState.errors.hairColor.message}
-                          </p>
-                        ) : null}
-                      </fieldset>
-                    </div>
+                    <fieldset className="grid w-full gap-2.5">
+                      <label
+                        htmlFor="hairColor"
+                        className="text-sm font-medium text-gray-50 sm:text-base"
+                      >
+                        Choose hair color
+                      </label>
+                      <ColorPicker
+                        control={control}
+                        name="hairColor"
+                        options={Object.values(HAIR_COLOR)}
+                        formatHex={hexToHairColor}
+                      />
+                      {formState.errors.hairColor ? (
+                        <p className="-mt-1 text-sm font-medium text-red-500">
+                          {formState.errors.hairColor.message}
+                        </p>
+                      ) : null}
+                    </fieldset>
                     <fieldset className="grid w-full gap-2.5">
                       <label
                         htmlFor="smile"
