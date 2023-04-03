@@ -20,7 +20,6 @@ import {
   type ResponseData,
   type UploadedFile,
 } from "@/types/globals";
-import { api } from "@/utils/api";
 import { downloadFile } from "@/utils/download";
 import { hexToHairColor } from "@/utils/format";
 import { useAutoAnimate } from "@formkit/auto-animate/react";
@@ -62,17 +61,8 @@ const Home: NextPageWithLayout = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [timeElapsed, setTimeElapsed] = useState(0);
+  const [isGeneratedLoaded, setIsGeneratedLoaded] = useState(false);
   const [isDownloading, setIsDownloading] = useState(false);
-
-  // create photo mutation
-  const createPhotoMutation = api.photos.create.useMutation({
-    onSuccess: (data) => {
-      console.log(data);
-    },
-    onError: (error) => {
-      toast.error(error.message);
-    },
-  });
 
   // react-hook-form
   const { handleSubmit, formState, watch, control, setValue, reset } =
@@ -145,14 +135,6 @@ const Home: NextPageWithLayout = () => {
           setIsLoading(false);
         } else {
           setGeneratedImage(editResponse2.output);
-          if (!watch("restored") && !watch("bgRemoved")) {
-            await createPhotoMutation.mutateAsync({
-              editedId: editResponse2.id,
-              editedImage: editResponse2.output ?? "",
-              inputImage: uploadedFile.secureUrl,
-              prompt: editResponse2.prompt ?? "",
-            });
-          }
 
           if (watch("restored")) {
             // restore image
@@ -204,11 +186,8 @@ const Home: NextPageWithLayout = () => {
             }
           }
 
-          setTimeout(() => {
-            setIsLoading(false);
-            setSelectedTabIndex(1);
-            setSelectedTabIndex(1);
-          }, 8000);
+          setIsLoading(false);
+          setSelectedTabIndex(1);
         }
       }
     };
@@ -239,6 +218,10 @@ const Home: NextPageWithLayout = () => {
   // moch image generation
   const mochGenerateImage = async () => {
     setIsLoading(true);
+    setOriginalImage(null);
+    setGeneratedImage(null);
+    setFinalImage(null);
+    setIsGeneratedLoaded(false);
     await new Promise((resolve) => setTimeout(resolve, 200));
     setOriginalImage({
       name: "original.jpg",
@@ -294,7 +277,7 @@ const Home: NextPageWithLayout = () => {
                   aria-hidden="true"
                 />
                 <h2 className="text-center text-base font-semibold sm:text-lg">
-                  Generating image, this usually takes 15-20 seconds...
+                  Generating image, this usually takes 25-30 seconds...
                 </h2>
                 <p className="text-center text-base font-semibold sm:text-lg">
                   {`${
@@ -306,7 +289,7 @@ const Home: NextPageWithLayout = () => {
                 src={
                   selectedFile
                     ? URL.createObjectURL(selectedFile)
-                    : "/images/preview-placeholder.svg"
+                    : "/images/placeholder.svg"
                 }
                 alt="selected file"
                 width={480}
@@ -342,6 +325,7 @@ const Home: NextPageWithLayout = () => {
                   setIsCropperOpen(false);
                   setCropData(null);
                   setIsLoading(false);
+                  setIsGeneratedLoaded(false);
                   setIsComparing(false);
                   setError(null);
                   setIsDownloading(false);
@@ -353,12 +337,14 @@ const Home: NextPageWithLayout = () => {
             </div>
           ) : originalImage && generatedImage ? (
             <div className="grid place-items-center gap-8">
-              <Toggle
-                enabled={isComparing}
-                setEnabled={setIsComparing}
-                enabledLabel="Compare"
-                disabledLabel="Side by side"
-              />
+              {isGeneratedLoaded ? (
+                <Toggle
+                  enabled={isComparing}
+                  setEnabled={setIsComparing}
+                  enabledLabel="Compare"
+                  disabledLabel="Side by side"
+                />
+              ) : null}
               {isComparing ? (
                 <CompareSlider
                   itemOneName={originalImage.name ?? "original"}
@@ -421,6 +407,7 @@ const Home: NextPageWithLayout = () => {
                             height={480}
                             className="aspect-square rounded-md"
                             priority
+                            onLoadingComplete={() => setIsGeneratedLoaded(true)}
                           />
                         </div>
                       ),
@@ -490,6 +477,7 @@ const Home: NextPageWithLayout = () => {
                   setIsCropperOpen(false);
                   setCropData(null);
                   setIsLoading(false);
+                  setIsGeneratedLoaded(false);
                   setIsComparing(false);
                   setError(null);
                   setIsDownloading(false);
@@ -611,10 +599,10 @@ const Home: NextPageWithLayout = () => {
               </div>
               <fieldset className="mt-6 grid w-full gap-2.5">
                 <label
-                  htmlFor="aditionalFeatures"
+                  htmlFor="addOns"
                   className="text-sm font-medium text-gray-50 sm:text-base"
                 >
-                  Toggle aditional features{" "}
+                  Choose aditional features{" "}
                   <span className="text-gray-400">(max 1)</span>
                 </label>
                 <Accordion
