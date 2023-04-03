@@ -32,17 +32,19 @@ const Tabs = ({ selectedIndex, setSelectedIndex, tabs }: TabsProps) => {
           ))}
         </Tab.List>
         <Tab.Panels className="mt-1.5">
-          {tabs.map((tab) => (
-            <Tab.Panel
-              key={tab.name}
-              className={twMerge(
-                "rounded-md bg-gray-700 p-1",
-                "ring-white ring-opacity-60 ring-offset-1 ring-offset-violet-400 focus:outline-none focus:ring-1"
-              )}
-            >
-              {tab.content}
-            </Tab.Panel>
-          ))}
+          {tabs
+            .filter((tab) => !!tab)
+            .map((tab) => (
+              <Tab.Panel
+                key={tab.name}
+                className={twMerge(
+                  "rounded-md bg-gray-700 p-1",
+                  "ring-white ring-opacity-60 ring-offset-1 ring-offset-violet-400 focus:outline-none focus:ring-1"
+                )}
+              >
+                {tab.content}
+              </Tab.Panel>
+            ))}
         </Tab.Panels>
       </Tab.Group>
     </div>

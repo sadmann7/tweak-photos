@@ -1,5 +1,6 @@
 import CompareSlider from "@/components/CompareSlider";
 import CropModal from "@/components/CropModal";
+import Tabs from "@/components/Tabs";
 import DefaultLayout from "@/components/layouts/DefaultLayout";
 import Accordion from "@/components/ui/Accordion";
 import Button from "@/components/ui/Button";
@@ -56,6 +57,7 @@ const Home: NextPageWithLayout = () => {
   );
   const [generatedImage, setGeneratedImage] = useState<string | null>(null);
   const [finalImage, setFinalImage] = useState<string | null>(null);
+  const [selectedTabIndex, setSelectedTabIndex] = useState(0);
   const [isComparing, setIsComparing] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -308,7 +310,7 @@ const Home: NextPageWithLayout = () => {
               </Button>
             </div>
           ) : originalImage && generatedImage ? (
-            <div className="grid w-full place-items-center gap-8">
+            <div className="grid place-items-center gap-8">
               <Toggle
                 enabled={isComparing}
                 setEnabled={setIsComparing}
@@ -324,80 +326,137 @@ const Home: NextPageWithLayout = () => {
                   className="aspect-square max-h-[480px] rounded-xl"
                 />
               ) : (
-                <div className="flex w-full flex-col items-center gap-6 sm:flex-row sm:gap-4">
-                  <div className="grid w-full place-items-center gap-2 sm:w-1/2">
-                    <h2 className="text-base font-medium text-gray-50 sm:text-lg">
-                      Original image
-                    </h2>
-                    <Image
-                      src={originalImage.url}
-                      alt={originalImage.name ?? "original"}
-                      width={480}
-                      height={480}
-                      className="rounded-xl"
-                      priority
-                    />
-                  </div>
-                  <div className="grid w-full place-items-center gap-2 sm:w-1/2">
-                    <h2 className="text-base font-medium text-gray-50 sm:text-lg">
-                      Generated image
-                    </h2>
-                    <Image
-                      src={finalImage ?? generatedImage}
-                      alt={"Generated"}
-                      width={480}
-                      height={480}
-                      className="rounded-xl"
-                      priority
-                    />
-                  </div>
-                </div>
+                <Tabs
+                  selectedIndex={selectedTabIndex}
+                  setSelectedIndex={setSelectedTabIndex}
+                  tabs={[
+                    {
+                      name: "Original",
+                      content: (
+                        <Image
+                          src={originalImage.url}
+                          alt={originalImage.name ?? "original"}
+                          width={480}
+                          height={480}
+                          className="aspect-square rounded-md"
+                          priority
+                        />
+                      ),
+                    },
+                    {
+                      name: "Generated",
+                      content: (
+                        <div className="relative">
+                          <Button
+                            aria-label="Download image"
+                            variant="gray"
+                            className="absolute right-2.5 top-2.5 z-10 h-auto w-fit gap-2 rounded-full border border-gray-950 bg-gray-700/70 p-3 hover:bg-gray-700 active:scale-95"
+                            onClick={() => {
+                              setIsDownloading(true);
+                              downloadFile(generatedImage, "edited-photo.webp");
+                              setTimeout(() => {
+                                setIsDownloading(false);
+                              }, 500);
+                            }}
+                            disabled={isDownloading}
+                          >
+                            {isDownloading ? (
+                              <Loader2
+                                className="h-5 w-5 animate-spin"
+                                aria-hidden="true"
+                              />
+                            ) : (
+                              <Download
+                                className="h-5 w-5"
+                                aria-hidden="true"
+                              />
+                            )}
+                          </Button>
+                          <Image
+                            src={generatedImage}
+                            alt={"Generated"}
+                            width={480}
+                            height={480}
+                            className="aspect-square rounded-md"
+                            priority
+                          />
+                        </div>
+                      ),
+                    },
+                    {
+                      name: finalImage
+                        ? watch("restored")
+                          ? "Restored"
+                          : watch("bgRemoved")
+                          ? "Masked"
+                          : null
+                        : null,
+                      content: finalImage ? (
+                        <div className="relative">
+                          <Button
+                            aria-label="Download image"
+                            variant="gray"
+                            className="absolute right-2.5 top-2.5 z-10 h-auto w-fit gap-2 rounded-full border border-gray-950 bg-gray-700/70 p-3 hover:bg-gray-700 active:scale-95"
+                            onClick={() => {
+                              setIsDownloading(true);
+                              downloadFile(
+                                finalImage,
+                                `${
+                                  watch("restored") ? "restored" : "masked"
+                                }-photo.webp`
+                              );
+                              setTimeout(() => {
+                                setIsDownloading(false);
+                              }, 500);
+                            }}
+                            disabled={isDownloading}
+                          >
+                            {isDownloading ? (
+                              <Loader2
+                                className="h-5 w-5 animate-spin"
+                                aria-hidden="true"
+                              />
+                            ) : (
+                              <Download
+                                className="h-5 w-5"
+                                aria-hidden="true"
+                              />
+                            )}
+                          </Button>
+                          <Image
+                            src={finalImage}
+                            alt={"Final"}
+                            width={480}
+                            height={480}
+                            className="aspect-square rounded-md"
+                            priority
+                          />
+                        </div>
+                      ) : null,
+                    },
+                  ].filter((tab) => tab.name && tab.content)}
+                />
               )}
-              <div className="flex w-full max-w-sm flex-col items-center justify-center gap-4 sm:flex-row">
-                <Button
-                  aria-label="Generate another image"
-                  className="w-full gap-2 text-sm sm:text-base"
-                  onClick={() => {
-                    setOriginalImage(null);
-                    setGeneratedImage(null);
-                    setFinalImage(null);
-                    setSelectedFile(null);
-                    setIsCropperOpen(false);
-                    setCropData(null);
-                    setIsLoading(false);
-                    setIsComparing(false);
-                    setError(null);
-                    setIsDownloading(false);
-                    reset();
-                  }}
-                >
-                  <Upload className="h-4 w-4 stroke-2" aria-hidden="true" />
-                  <span className="whitespace-nowrap">Generate again</span>
-                </Button>
-                <Button
-                  aria-label="Download generated image"
-                  variant="white"
-                  className="w-full gap-2 text-sm sm:text-base"
-                  onClick={() => {
-                    downloadFile(generatedImage, "generated-image.webp");
-                    setIsDownloading(true);
-                    setTimeout(() => {
-                      setIsDownloading(false);
-                    }, 1000);
-                  }}
-                  disabled={isDownloading}
-                >
-                  {isDownloading ? (
-                    <Loader2
-                      className="h-4 w-4 animate-spin"
-                      aria-hidden="true"
-                    />
-                  ) : (
-                    <Download className="h-4 w-4" aria-hidden="true" />
-                  )}
-                  <span className="whitespace-nowrap">Download image</span>
-                </Button>
-              </div>
+              <Button
+                aria-label="Generate another image"
+                className="w-full gap-2 text-sm sm:text-base"
+                onClick={() => {
+                  setOriginalImage(null);
+                  setGeneratedImage(null);
+                  setFinalImage(null);
+                  setSelectedFile(null);
+                  setIsCropperOpen(false);
+                  setCropData(null);
+                  setIsLoading(false);
+                  setIsComparing(false);
+                  setError(null);
+                  setIsDownloading(false);
+                  reset();
+                }}
+              >
+                <Upload className="h-4 w-4 stroke-2" aria-hidden="true" />
+                <span className="whitespace-nowrap">Generate again</span>
+              </Button>
             </div>
           ) : (
             <form
