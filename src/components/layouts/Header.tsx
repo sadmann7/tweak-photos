@@ -41,7 +41,7 @@ const Header = () => {
         </Link>
         <a
           aria-label="navigate to github repo"
-          href="https://github.com/sadmann7/npm-picker"
+          href="https://github.com/sadmann7/tweak-photos"
           target="_blank"
           rel="noopener noreferrer"
           className="flex items-center gap-2 rounded-full bg-blue-600 px-2 py-2 text-base transition-colors hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2 focus:ring-offset-gray-900 active:scale-95 xxs:px-4"
