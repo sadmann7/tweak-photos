@@ -235,33 +235,40 @@ const Home: NextPageWithLayout = () => {
             </p>
           </div>
           {isLoading ? (
-            <div className="relative overflow-hidden rounded-lg ring-1 ring-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2 focus:ring-offset-gray-900">
-              <div className="absolute inset-0 z-10 mx-auto flex max-w-xs flex-col items-center justify-center gap-2 text-gray-50">
-                <Loader2
-                  className="h-16 w-16 animate-spin"
-                  aria-hidden="true"
+            <div className="grid place-items-center gap-5">
+              <div className="relative overflow-hidden rounded-lg ring-1 ring-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2 focus:ring-offset-gray-900">
+                <div className="absolute inset-0 z-10 mx-auto flex max-w-xs flex-col items-center justify-center gap-2 text-gray-50">
+                  <Loader2
+                    className="h-16 w-16 animate-spin"
+                    aria-hidden="true"
+                  />
+                  <span className="text-center text-base font-semibold sm:text-lg">
+                    Generating image, this usually takes 25-30 seconds...
+                  </span>
+                  <p className="text-center text-base font-semibold sm:text-lg">
+                    {`${
+                      timeElapsed >= 60
+                        ? `${Math.floor(timeElapsed / 60)}m`
+                        : ""
+                    }${timeElapsed % 60}s`}
+                  </p>
+                </div>
+                <Image
+                  src={
+                    selectedFile
+                      ? URL.createObjectURL(selectedFile)
+                      : "/images/placeholder.svg"
+                  }
+                  alt="selected file"
+                  width={480}
+                  height={480}
+                  className="object-cover opacity-50 blur-md filter"
                 />
-                <h2 className="text-center text-base font-semibold sm:text-lg">
-                  Generating image, this usually takes 25-30 seconds...
-                </h2>
-                <p className="text-center text-base font-semibold sm:text-lg">
-                  {`${
-                    timeElapsed >= 60 ? `${Math.floor(timeElapsed / 60)}m` : ""
-                  }${timeElapsed % 60}s`}
-                </p>
+                <div className="absolute inset-0 bg-gray-900 bg-opacity-50" />
               </div>
-              <Image
-                src={
-                  selectedFile
-                    ? URL.createObjectURL(selectedFile)
-                    : "/images/placeholder.svg"
-                }
-                alt="selected file"
-                width={480}
-                height={480}
-                className="object-cover opacity-50 blur-md filter"
-              />
-              <div className="absolute inset-0 bg-gray-900 bg-opacity-50" />
+              <div className="max-w-sm text-center text-base text-gray-400 sm:text-lg">
+                Your photos will be deleted from our servers after 15 minutes
+              </div>
             </div>
           ) : error ? (
             <div

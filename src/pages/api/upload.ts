@@ -39,23 +39,23 @@ export default async function handler(
     createdAt: uploadedImage.created_at,
   });
 
-  // // delete images created more than 15 minutes ago
-  // const options: UploadApiOptions = {
-  //   resource_type: "image",
-  //   type: "upload",
-  //   prefix: "tweak-photos",
-  //   folder: "tweak-photos",
-  // };
-  // const result = (await cloudinary.api.resources(options)) as {
-  //   resources: UploadApiResponse[];
-  // };
-  // const images = result.resources;
-  // const now = new Date();
-  // const targetTime = new Date(now.getTime() - 15 * 60 * 1000);
-  // images.forEach((image: UploadApiResponse) => {
-  //   const createdAt = new Date(image.created_at);
-  //   if (createdAt < targetTime) {
-  //     void cloudinary.uploader.destroy(image.public_id);
-  //   }
-  // });
+  // delete images created more than 15 minutes ago
+  const options: UploadApiOptions = {
+    resource_type: "image",
+    type: "upload",
+    prefix: "tweak-photos",
+    folder: "tweak-photos",
+  };
+  const result = (await cloudinary.api.resources(options)) as {
+    resources: UploadApiResponse[];
+  };
+  const images = result.resources;
+  const now = new Date();
+  const targetTime = new Date(now.getTime() - 15 * 60 * 1000);
+  images.forEach((image: UploadApiResponse) => {
+    const createdAt = new Date(image.created_at);
+    if (createdAt < targetTime) {
+      void cloudinary.uploader.destroy(image.public_id);
+    }
+  });
 }
